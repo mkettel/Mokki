@@ -1,0 +1,321 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
+
+export type HouseSettings = {
+  wifi_password?: string;
+  address?: string;
+  rules?: string[];
+  local_tips?: string;
+  emergency_contacts?: { name: string; phone: string }[];
+};
+
+export type MemberRole = "admin" | "member";
+export type InviteStatus = "pending" | "accepted";
+export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other";
+export type MessageType = "text" | "system";
+
+export interface Database {
+  public: {
+    Tables: {
+      profiles: {
+        Row: {
+          id: string;
+          email: string;
+          display_name: string | null;
+          avatar_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email: string;
+          display_name?: string | null;
+          avatar_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          display_name?: string | null;
+          avatar_url?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      houses: {
+        Row: {
+          id: string;
+          name: string;
+          address: string | null;
+          settings: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          address?: string | null;
+          settings?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          address?: string | null;
+          settings?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      house_members: {
+        Row: {
+          id: string;
+          house_id: string;
+          user_id: string | null;
+          role: MemberRole;
+          invite_status: InviteStatus;
+          invited_email: string | null;
+          invited_at: string;
+          joined_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          user_id?: string | null;
+          role?: MemberRole;
+          invite_status?: InviteStatus;
+          invited_email?: string | null;
+          invited_at?: string;
+          joined_at?: string | null;
+        };
+        Update: {
+          role?: MemberRole;
+          invite_status?: InviteStatus;
+          user_id?: string | null;
+          joined_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "house_members_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "house_members_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      stays: {
+        Row: {
+          id: string;
+          house_id: string;
+          user_id: string;
+          check_in: string;
+          check_out: string;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          user_id: string;
+          check_in: string;
+          check_out: string;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          check_in?: string;
+          check_out?: string;
+          notes?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stays_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "stays_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      expenses: {
+        Row: {
+          id: string;
+          house_id: string;
+          paid_by: string;
+          amount: number;
+          description: string;
+          category: ExpenseCategory;
+          date: string;
+          receipt_url: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          paid_by: string;
+          amount: number;
+          description: string;
+          category?: ExpenseCategory;
+          date: string;
+          receipt_url?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          amount?: number;
+          description?: string;
+          category?: ExpenseCategory;
+          date?: string;
+          receipt_url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "expenses_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "expenses_paid_by_fkey";
+            columns: ["paid_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      expense_splits: {
+        Row: {
+          id: string;
+          expense_id: string;
+          user_id: string;
+          amount: number;
+          settled: boolean;
+          settled_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          expense_id: string;
+          user_id: string;
+          amount: number;
+          settled?: boolean;
+          settled_at?: string | null;
+        };
+        Update: {
+          amount?: number;
+          settled?: boolean;
+          settled_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "expense_splits_expense_id_fkey";
+            columns: ["expense_id"];
+            isOneToOne: false;
+            referencedRelation: "expenses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "expense_splits_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      messages: {
+        Row: {
+          id: string;
+          house_id: string;
+          user_id: string;
+          content: string;
+          type: MessageType;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          user_id: string;
+          content: string;
+          type?: MessageType;
+          created_at?: string;
+        };
+        Update: {
+          content?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "messages_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+    };
+    Views: {};
+    Functions: {};
+    Enums: {
+      member_role: MemberRole;
+      invite_status: InviteStatus;
+      expense_category: ExpenseCategory;
+      message_type: MessageType;
+    };
+    CompositeTypes: {};
+  };
+}
+
+// Helper types for easier usage
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+export type House = Database["public"]["Tables"]["houses"]["Row"];
+export type HouseMember = Database["public"]["Tables"]["house_members"]["Row"];
+export type Stay = Database["public"]["Tables"]["stays"]["Row"];
+export type Expense = Database["public"]["Tables"]["expenses"]["Row"];
+export type ExpenseSplit = Database["public"]["Tables"]["expense_splits"]["Row"];
+export type Message = Database["public"]["Tables"]["messages"]["Row"];
+
+// Joined types for common queries
+export type HouseMemberWithProfile = HouseMember & {
+  profiles: Profile;
+};
+
+export type StayWithProfile = Stay & {
+  profiles: Profile;
+};
+
+export type ExpenseWithPaidBy = Expense & {
+  profiles: Profile;
+};
+
+export type MessageWithProfile = Message & {
+  profiles: Profile;
+};
