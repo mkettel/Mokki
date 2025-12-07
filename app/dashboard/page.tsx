@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
 
   return (
-    <div className="w-full flex md:h-[calc(100vh-15rem)] h-[calc(100vh-12rem)] justify-between  flex-col items-center md:mt-24 mt-10">
+    <div className="w-full flex md:h-[calc(100vh-15rem)] h-[calc(100vh-13rem)] justify-between  flex-col items-center md:mt-24 mt-10">
       <h1 className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center">
         {activeHouse.name}
       </h1>
