@@ -88,8 +88,10 @@
     100% 40%,
     100% 100%
   );
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .geometric-bg::before {

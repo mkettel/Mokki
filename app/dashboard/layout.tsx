@@ -33,7 +33,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen flex flex-col">
       <div className="geometric-bg" aria-hidden="true" />
       <DashboardNav house={activeHouse} houses={houses} />
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl relative z-10">
+      <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl relative">
         {children}
       </main>
     </div>

@@ -70,7 +70,7 @@ export function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto -mx-6 px-6">
-          <div className="flex gap-3 pb-2" style={{ minWidth: "max-content" }}>
+          <div className="flex gap-3 py-2" style={{ minWidth: "max-content" }}>
             {hourlyData.map((hour, i) => {
               const isNow = i === 0;
               const hasSnow = hour.snowfall > 0;
@@ -83,12 +83,14 @@ export function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
                     isNow
                       ? "bg-primary/10 ring-1 ring-primary"
                       : hasSnow
-                        ? "bg-blue-50 dark:bg-blue-950/30"
-                        : ""
+                      ? "bg-blue-50 dark:bg-blue-950/30"
+                      : ""
                   }`}
                 >
                   <span
-                    className={`text-xs font-medium ${isNow ? "text-primary" : "text-muted-foreground"}`}
+                    className={`text-xs font-medium ${
+                      isNow ? "text-primary" : "text-muted-foreground"
+                    }`}
                   >
                     {isNow ? "Now" : formatHour(hour.time)}
                   </span>
@@ -127,15 +129,22 @@ export function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
         {/* Summary row */}
         <div className="flex items-center justify-between mt-4 pt-4 border-t text-sm text-muted-foreground">
           <div>
-            High: <span className="font-medium text-foreground">{Math.round(Math.max(...hourlyData.map((h) => h.temp)))}°</span>
+            High:{" "}
+            <span className="font-medium text-foreground">
+              {Math.round(Math.max(...hourlyData.map((h) => h.temp)))}°
+            </span>
             {" · "}
-            Low: <span className="font-medium text-foreground">{Math.round(Math.min(...hourlyData.map((h) => h.temp)))}°</span>
+            Low:{" "}
+            <span className="font-medium text-foreground">
+              {Math.round(Math.min(...hourlyData.map((h) => h.temp)))}°
+            </span>
           </div>
           {hasSnowComing && (
             <div className="flex items-center gap-1 text-blue-500">
               <Snowflake className="h-4 w-4" />
               <span>
-                {snowHours.reduce((sum, h) => sum + h.snowfall, 0).toFixed(1)}" expected
+                {snowHours.reduce((sum, h) => sum + h.snowfall, 0).toFixed(1)}"
+                expected
               </span>
             </div>
           )}
