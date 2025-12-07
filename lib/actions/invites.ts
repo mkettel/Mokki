@@ -5,12 +5,19 @@ import { sendInviteEmail } from "@/lib/email/resend";
 import { revalidatePath } from "next/cache";
 
 const getBaseUrl = () => {
+  // Production: use explicit site URL (set in Vercel env vars)
+  if (process.env.SITE_URL) {
+    return process.env.SITE_URL;
+  }
+  // Also check NEXT_PUBLIC_ version for backwards compatibility
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
   }
+  // Vercel preview deployments
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
+  // Local development
   return "http://localhost:3003";
 };
 
