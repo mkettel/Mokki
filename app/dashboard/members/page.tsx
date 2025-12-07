@@ -66,10 +66,7 @@ export default async function MembersPage() {
         <CardContent>
           <div className="space-y-4">
             {acceptedMembers.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center justify-between"
-              >
+              <div key={member.id} className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-sm font-medium">
