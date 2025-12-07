@@ -28,8 +28,8 @@ export default async function DashboardPage() {
   return (
     <div className="">
       <div>
-        <h1 className="text-2xl font-bold">{activeHouse.name}</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl uppercase font-bold">{activeHouse.name}</h1>
+        <p className="text-muted-foreground font-medium text-lg font-telma">
           Welcome back! Here&apos;s what&apos;s happening at the house.
         </p>
       </div>

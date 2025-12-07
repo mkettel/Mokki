@@ -28,7 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${zain.className} antialiased`}>
+      <link
+        href="https://api.fontshare.com/v2/css?f[]=telma@1&f[]=chillax@1&display=swap"
+        rel="stylesheet"
+      ></link>
+      <body className={`font-chillax antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

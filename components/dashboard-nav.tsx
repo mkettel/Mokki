@@ -46,10 +46,12 @@ export function DashboardNav({ house }: DashboardNavProps) {
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2">
               <Mountain className="h-5 w-5" />
-              <span className="font-semibold hidden sm:inline">Mökki</span>
+              <span className="font-semibold hidden sm:inline uppercase">
+                Mökki
+              </span>
             </Link>
             <span className="text-muted-foreground">|</span>
-            <span className="font-medium text-sm truncate max-w-[150px]">
+            <span className="font-medium uppercase text-sm truncate max-w-[150px]">
               {house.name}
             </span>
           </div>
