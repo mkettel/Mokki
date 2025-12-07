@@ -13,6 +13,7 @@ export default {
       fontFamily: {
         chillax: ["Chillax", "sans-serif"],
         telma: ["Telma", "sans-serif"],
+        boska: ["Boska", "serif"],
       },
       colors: {
         background: "hsl(var(--background))",

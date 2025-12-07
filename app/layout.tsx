@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <link
-        href="https://api.fontshare.com/v2/css?f[]=telma@1&f[]=chillax@1&display=swap"
+        href="https://api.fontshare.com/v2/css?f[]=telma@1&f[]=chillax@1&f[]=boska@1&display=swap"
         rel="stylesheet"
       ></link>
       <body className={`font-chillax antialiased`}>

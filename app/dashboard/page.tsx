@@ -26,15 +26,43 @@ export default async function DashboardPage() {
   const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
 
   return (
-    <div className="">
-      <div>
-        <h1 className="text-2xl uppercase text-red font-bold">
-          {activeHouse.name}
-        </h1>
+    <div className="w-full flex h-[calc(100vh-10rem)] justify-between flex-col items-center mt-10">
+      <h1 className="text-[82px] uppercase text-red font-bold w-full text-center">
+        {activeHouse.name}
+      </h1>
+
+      <div className="flex flex-col flex-wrap gap-6 max-w-3xl w-full mb-28">
+        <div className="flex justify-between">
+          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+            Reserve your bed
+          </h2>
+          <h2 className="text-5xl uppercase text-background font-boska font-medium ml-12">
+            Pow report
+          </h2>
+        </div>
+        <div className="flex justify-between">
+          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+            B-roll
+          </h2>
+          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+            Bulletin board
+          </h2>
+          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+            Pay up
+          </h2>
+        </div>
+        <div className="flex justify-between">
+          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+            Who&apos;s who
+          </h2>
+          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+            about you
+          </h2>
+        </div>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-8 hidden">
         <QuickStatCard
           title="Members"
           value={acceptedMembers.length.toString()}
@@ -66,7 +94,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 mt-4">
+      <div className="grid gap-4 md:grid-cols-2 mt-4 hidden">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Quick Actions</CardTitle>
