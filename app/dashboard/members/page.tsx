@@ -75,9 +75,20 @@ export default async function MembersPage() {
                     </span>
                   </div>
                   <div>
-                    <p className="font-medium">
-                      {member.profiles?.display_name || "Unknown"}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">
+                        {member.profiles?.display_name || "Unknown"}
+                      </p>
+                      {member.profiles?.rider_type && (
+                        <span className="text-xs text-muted-foreground">
+                          {member.profiles.rider_type === "skier"
+                            ? "Skier"
+                            : member.profiles.rider_type === "snowboarder"
+                            ? "Snowboarder"
+                            : "Skier & Snowboarder"}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {member.profiles?.email}
                     </p>

@@ -150,6 +150,7 @@ type HouseMemberWithProfile = {
     email: string;
     display_name: string | null;
     avatar_url: string | null;
+    rider_type: "skier" | "snowboarder" | "both" | null;
   } | null;
 };
 
@@ -189,7 +190,8 @@ export async function getHouseWithMembers(houseId: string): Promise<{
         id,
         email,
         display_name,
-        avatar_url
+        avatar_url,
+        rider_type
       )
     `)
     .eq("house_id", houseId);
