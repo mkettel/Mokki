@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Zain } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
@@ -10,13 +10,15 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Mökki - Ski House Manager",
-  description: "Manage your ski lease house - track stays, split expenses, and coordinate with your group",
+  description:
+    "Manage your ski lease house - track stays, split expenses, and coordinate with your group",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const zain = Zain({
+  variable: "--font-zain",
   display: "swap",
   subsets: ["latin"],
+  weight: ["200", "300", "400", "700", "800", "900"],
 });
 
 export default function RootLayout({
@@ -26,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className={`${zain.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mountain, Calendar, DollarSign, MessageCircle, Home, Settings, Users } from "lucide-react";
+import {
+  Mountain,
+  Calendar,
+  DollarSign,
+  MessageCircle,
+  Home,
+  Settings,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
 import { ThemeSwitcher } from "./theme-switcher";
@@ -40,7 +48,7 @@ export function DashboardNav({ house }: DashboardNavProps) {
               <Mountain className="h-5 w-5" />
               <span className="font-semibold hidden sm:inline">Mökki</span>
             </Link>
-            <span className="text-muted-foreground">/</span>
+            <span className="text-muted-foreground">|</span>
             <span className="font-medium text-sm truncate max-w-[150px]">
               {house.name}
             </span>
@@ -50,7 +58,8 @@ export function DashboardNav({ house }: DashboardNavProps) {
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href ||
+              const isActive =
+                pathname === item.href ||
                 (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
               return (
@@ -82,7 +91,8 @@ export function DashboardNav({ house }: DashboardNavProps) {
         <nav className="md:hidden flex items-center gap-1 overflow-x-auto pb-2 px-4">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href ||
+            const isActive =
+              pathname === item.href ||
               (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
             return (
