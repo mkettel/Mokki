@@ -26,7 +26,7 @@ export default async function DashboardPage() {
   const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
 
   return (
-    <div className="w-full flex h-[calc(100vh-15rem)] justify-between flex-col items-center mt-24">
+    <div className="w-full flex h-[calc(100vh-15rem)] justify-between  flex-col items-center mt-24">
       <h1 className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center">
         {activeHouse.name}
       </h1>
@@ -41,7 +41,7 @@ export default async function DashboardPage() {
           </a>
           <a
             href="/dashboard/expenses"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium ml-12"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium md:ml-12 ml-0"
           >
             Pow report
           </a>
