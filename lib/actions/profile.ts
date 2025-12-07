@@ -2,8 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { RiderType } from "@/types/database";
 
-export async function updateProfile(displayName: string) {
+export async function updateProfile(displayName: string, riderType?: RiderType | null) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -16,9 +17,17 @@ export async function updateProfile(displayName: string) {
     return { error: "Name must be 100 characters or less" };
   }
 
+  const updateData: { display_name: string | null; rider_type?: RiderType | null } = {
+    display_name: displayName.trim() || null,
+  };
+
+  if (riderType !== undefined) {
+    updateData.rider_type = riderType;
+  }
+
   const { error } = await supabase
     .from("profiles")
-    .update({ display_name: displayName.trim() || null })
+    .update(updateData)
     .eq("id", user.id);
 
   if (error) {
@@ -26,7 +35,7 @@ export async function updateProfile(displayName: string) {
     return { error: "Failed to update profile" };
   }
 
-  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/account");
   revalidatePath("/dashboard");
   return { success: true };
 }

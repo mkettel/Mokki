@@ -18,6 +18,7 @@ export type MemberRole = "admin" | "member";
 export type InviteStatus = "pending" | "accepted";
 export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other" | "guest_fees";
 export type MessageType = "text" | "system";
+export type RiderType = "skier" | "snowboarder" | "both";
 
 export interface Database {
   public: {
@@ -28,6 +29,7 @@ export interface Database {
           email: string;
           display_name: string | null;
           avatar_url: string | null;
+          rider_type: RiderType | null;
           created_at: string;
           updated_at: string;
         };
@@ -36,6 +38,7 @@ export interface Database {
           email: string;
           display_name?: string | null;
           avatar_url?: string | null;
+          rider_type?: RiderType | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -44,6 +47,7 @@ export interface Database {
           email?: string;
           display_name?: string | null;
           avatar_url?: string | null;
+          rider_type?: RiderType | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -295,6 +299,7 @@ export interface Database {
       invite_status: InviteStatus;
       expense_category: ExpenseCategory;
       message_type: MessageType;
+      rider_type: RiderType;
     };
     CompositeTypes: {};
   };

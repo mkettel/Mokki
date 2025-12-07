@@ -6,16 +6,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile } from "@/lib/actions/profile";
+import { RiderType } from "@/types/database";
 
 interface ProfileSettingsFormProps {
   profile: {
     email: string;
     display_name: string | null;
+    rider_type: RiderType | null;
   };
 }
 
+const riderOptions: { value: RiderType; label: string; emoji: string }[] = [
+  { value: "skier", label: "Skier", emoji: "⛷️" },
+  { value: "snowboarder", label: "Snowboarder", emoji: "🏂" },
+  { value: "both", label: "Both", emoji: "⛷️🏂" },
+];
+
 export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
   const [displayName, setDisplayName] = useState(profile.display_name || "");
+  const [riderType, setRiderType] = useState<RiderType | null>(profile.rider_type);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +37,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
     setSuccess(null);
 
     try {
-      const result = await updateProfile(displayName);
+      const result = await updateProfile(displayName, riderType);
 
       if (result.error) {
         setError(result.error);
@@ -74,6 +83,31 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
         />
         <p className="text-xs text-muted-foreground">
           This is how your name appears to other members
+        </p>
+      </div>
+
+      <div className="grid gap-2">
+        <Label>Rider Type</Label>
+        <div className="flex gap-2">
+          {riderOptions.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setRiderType(option.value)}
+              disabled={isLoading}
+              className={`flex-1 flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-colors ${
+                riderType === option.value
+                  ? "border-primary bg-primary/10"
+                  : "border-muted hover:border-muted-foreground/50"
+              }`}
+            >
+              <span className="text-2xl">{option.emoji}</span>
+              <span className="text-sm font-medium">{option.label}</span>
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Are you a skier, snowboarder, or both?
         </p>
       </div>
 
