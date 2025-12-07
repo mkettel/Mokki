@@ -13,8 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 export function SignUpForm({
   className,
@@ -26,6 +26,15 @@ export function SignUpForm({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Pre-fill email from invite link
+  useEffect(() => {
+    const inviteEmail = searchParams.get("email");
+    if (inviteEmail) {
+      setEmail(inviteEmail);
+    }
+  }, [searchParams]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +48,21 @@ export function SignUpForm({
       return;
     }
 
+    // Get house ID from invite link if present and store it
+    const houseId = searchParams.get("house");
+    if (houseId) {
+      localStorage.setItem("pending_house_invite", JSON.stringify({
+        houseId,
+        email: email.toLowerCase().trim(),
+      }));
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
         },
       });
       if (error) throw error;

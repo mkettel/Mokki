@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "@/components/dashboard-nav";
-import { getUserHouses } from "@/lib/actions/house";
+import { getUserHouses, acceptAllPendingInvites } from "@/lib/actions/house";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +16,9 @@ export default async function DashboardLayout({
   if (!user) {
     redirect("/auth/login");
   }
+
+  // Auto-accept any pending invites for this user
+  await acceptAllPendingInvites();
 
   const { houses } = await getUserHouses();
 

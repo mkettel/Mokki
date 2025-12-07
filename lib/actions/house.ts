@@ -302,3 +302,43 @@ export async function getPendingInvites() {
 
   return { invites: invites || [] };
 }
+
+export async function acceptAllPendingInvites() {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || !user.email) {
+    return { accepted: 0 };
+  }
+
+  // Find all pending invites for this user's email
+  const { data: invites } = await supabase
+    .from("house_members")
+    .select("id")
+    .eq("invited_email", user.email.toLowerCase().trim())
+    .eq("invite_status", "pending");
+
+  if (!invites || invites.length === 0) {
+    return { accepted: 0 };
+  }
+
+  // Accept all pending invites
+  const inviteIds = invites.map(i => i.id);
+  const { error } = await supabase
+    .from("house_members")
+    .update({
+      user_id: user.id,
+      invite_status: "accepted",
+      joined_at: new Date().toISOString(),
+    })
+    .in("id", inviteIds);
+
+  if (error) {
+    console.error("Error accepting invites:", error);
+    return { accepted: 0, error: error.message };
+  }
+
+  // Note: Don't call revalidatePath here as this may be called during render
+  // The caller should handle revalidation if needed
+  return { accepted: invites.length };
+}

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CreateHouseForm } from "@/components/create-house-form";
+import { PendingInviteHandler } from "@/components/pending-invite-handler";
 import { Mountain } from "lucide-react";
 import Link from "next/link";
 
@@ -16,6 +17,9 @@ export default async function CreateHousePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Process any pending house invites */}
+      <PendingInviteHandler />
+
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
         <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
           <div className="flex gap-2 items-center font-semibold">
