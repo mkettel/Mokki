@@ -3,6 +3,7 @@ import { getUserHouses, getHouseWithMembers } from "@/lib/actions/house";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InviteMemberForm } from "@/components/invite-member-form";
+import { ResendInviteButton } from "@/components/resend-invite-button";
 
 export default async function MembersPage() {
   const supabase = await createClient();
@@ -110,7 +111,10 @@ export default async function MembersPage() {
                       </p>
                     </div>
                   </div>
-                  <Badge variant="outline">Pending</Badge>
+                  <div className="flex items-center gap-2">
+                    {isAdmin && <ResendInviteButton memberId={member.id} />}
+                    <Badge variant="outline">Pending</Badge>
+                  </div>
                 </div>
               ))}
             </div>

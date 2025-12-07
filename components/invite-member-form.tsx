@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/lib/supabase/client";
+import { sendInvite } from "@/lib/actions/invites";
 
 interface InviteMemberFormProps {
   houseId: string;
@@ -30,91 +30,20 @@ export function InviteMemberForm({ houseId }: InviteMemberFormProps) {
       return;
     }
 
-    const supabase = createClient();
-
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setError("You must be logged in");
+      const result = await sendInvite(houseId, email.trim());
+
+      if (result.error) {
+        setError(result.error);
         return;
       }
 
-      // Check if current user is admin
-      const { data: membership } = await supabase
-        .from("house_members")
-        .select("role")
-        .eq("house_id", houseId)
-        .eq("user_id", user.id)
-        .single();
-
-      if (membership?.role !== "admin") {
-        setError("Only admins can invite members");
-        return;
-      }
-
-      // Check if already invited
-      const { data: existing } = await supabase
-        .from("house_members")
-        .select("id, invite_status")
-        .eq("house_id", houseId)
-        .eq("invited_email", email.toLowerCase().trim())
-        .maybeSingle();
-
-      if (existing) {
-        setError("This person has already been invited");
-        return;
-      }
-
-      // Check if user already exists
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("id, email")
-        .eq("email", email.toLowerCase().trim())
-        .maybeSingle();
-
-      if (existingProfile) {
-        // Check if they're already a member
-        const { data: existingMember } = await supabase
-          .from("house_members")
-          .select("id")
-          .eq("house_id", houseId)
-          .eq("user_id", existingProfile.id)
-          .maybeSingle();
-
-        if (existingMember) {
-          setError("This person is already a member");
-          return;
-        }
-
-        // Add existing user directly
-        const { error: memberError } = await supabase
-          .from("house_members")
-          .insert({
-            house_id: houseId,
-            user_id: existingProfile.id,
-            invited_email: email.toLowerCase().trim(),
-            role: "member",
-            invite_status: "accepted",
-            joined_at: new Date().toISOString(),
-          });
-
-        if (memberError) throw memberError;
-
+      if (result.alreadyUser) {
         setSuccess(`${email} has been added to the house!`);
-      } else {
-        // Create pending invite
-        const { error: inviteError } = await supabase
-          .from("house_members")
-          .insert({
-            house_id: houseId,
-            invited_email: email.toLowerCase().trim(),
-            role: "member",
-            invite_status: "pending",
-          });
-
-        if (inviteError) throw inviteError;
-
+      } else if (result.emailSent) {
         setSuccess(`Invite sent to ${email}`);
+      } else {
+        setSuccess(`Invite created for ${email} (email could not be sent)`);
       }
 
       setEmail("");
