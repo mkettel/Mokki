@@ -5,6 +5,7 @@
 @layer base {
   :root {
     --background: 30 33% 82%;
+    --red-text: 0 74% 55%;
     --foreground: 0 0% 3.9%;
     --card: 30 33% 82%;
     --card-foreground: 0 0% 3.9%;
@@ -32,6 +33,7 @@
   }
   .dark {
     --background: 0 0% 3.9%;
+    --red-text: 0 74% 55%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -65,4 +67,35 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Blue geometric mountain background element */
+.geometric-bg {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55vh;
+  background-color: #4f68c0;
+  clip-path: polygon(
+    0% 100%,
+    0% 60%,
+    25% 45%,
+    42% 10%,
+    58% 35%,
+    75% 25%,
+    100% 50%,
+    100% 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+.geometric-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.18;
+  mix-blend-mode: overlay;
 }
