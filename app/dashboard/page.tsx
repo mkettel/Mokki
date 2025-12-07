@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Calendar, DollarSign, MessageCircle, Users } from "lucide-react";
 import Link from "next/link";
+import { DashboardHomeContent } from "@/components/dashboard-home-content";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -26,61 +27,8 @@ export default async function DashboardPage() {
   const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
 
   return (
-    <div className="w-full flex md:h-[calc(100vh-15rem)] h-[calc(100vh-13rem)] justify-between  flex-col items-center md:mt-24 mt-10">
-      <h1 className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center">
-        {activeHouse.name}
-      </h1>
-
-      <div className="flex flex-col flex-wrap md:gap-6 gap-0 md:max-w-3xl max-w-xl w-full md:mb-28 mb-0">
-        <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
-          <a
-            href="/dashboard/calendar"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
-          >
-            Reserve your bed
-          </a>
-          <a
-            href="/dashboard/expenses"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium md:ml-12 ml-0"
-          >
-            Pow report
-          </a>
-        </div>
-        <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
-          <a
-            href="/dashboard/expenses"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
-          >
-            B-roll
-          </a>
-          <a
-            href="/dashboard/expenses"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
-          >
-            Bulletin board
-          </a>
-          <a
-            href="/dashboard/expenses"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
-          >
-            Pay up
-          </a>
-        </div>
-        <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
-          <a
-            href="/dashboard/members"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
-          >
-            Who&apos;s who
-          </a>
-          <a
-            href="/dashboard/account"
-            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
-          >
-            about you
-          </a>
-        </div>
-      </div>
+    <>
+      <DashboardHomeContent houseName={activeHouse.name} />
 
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-8 hidden">
@@ -199,7 +147,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </>
   );
 }
 

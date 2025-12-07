@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
 import { ThemeSwitcher } from "./theme-switcher";
+import { motion } from "framer-motion";
 
 interface House {
   id: string;
@@ -40,11 +41,21 @@ export function DashboardNav({ house }: DashboardNavProps) {
   const isHomepage = pathname === "/dashboard";
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <motion.header
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
       <div className="container mx-auto max-w-6xl">
         <div className="flex h-14 items-center justify-between px-4">
           {/* Logo and House Name */}
-          <div className="flex items-center gap-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            className="flex items-center gap-4"
+          >
             <Link href="/dashboard" className="flex items-center gap-2">
               {/* <Mountain className="h-5 w-5" /> */}
               <span className="font-semibold inline uppercase">Mökki</span>
@@ -53,43 +64,58 @@ export function DashboardNav({ house }: DashboardNavProps) {
             <span className="font-medium uppercase text-sm truncate max-w-[150px]">
               {house.name}
             </span>
-          </div>
+          </motion.div>
 
           {/* Right side */}
-          <div className="flex items-center gap-2">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.15 }}
+            className="flex items-center gap-2"
+          >
             <ThemeSwitcher />
             {/* <LogoutButton /> */}
-          </div>
+          </motion.div>
         </div>
 
         {/* Navigation - hidden on homepage */}
         {!isHomepage && (
           <nav className="flex items-center gap-1 overflow-x-auto pb-2 px-4">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive =
                 pathname === item.href ||
                 (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
               return (
-                <Link
+                <motion.div
                   key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors",
-                    isActive
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                  )}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: 0.2 + index * 0.05,
+                    ease: "easeOut",
+                  }}
                 >
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>{item.label}</span>
-                </Link>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors",
+                      isActive
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span>{item.label}</span>
+                  </Link>
+                </motion.div>
               );
             })}
           </nav>
         )}
       </div>
-    </header>
+    </motion.header>
   );
 }
