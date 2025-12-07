@@ -1,9 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { OpenMeteoWeatherData } from "@/types/database";
+import { WeatherIcon } from "./weather/weather-icon";
 
 interface DashboardHomeContentProps {
   houseName: string;
+  weather: OpenMeteoWeatherData | null;
 }
 
 const links = [
@@ -16,21 +20,86 @@ const links = [
   { href: "/dashboard/account", label: "about you", row: 3 },
 ];
 
-export function DashboardHomeContent({ houseName }: DashboardHomeContentProps) {
+function LiveClock() {
+  const [time, setTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setTime(new Date());
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!time) return null;
+
+  const formatTime = (date: Date) => {
+    return date
+      .toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .toLowerCase();
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  return (
+    <span>
+      {formatDate(time)} · {formatTime(time)}
+    </span>
+  );
+}
+
+export function DashboardHomeContent({
+  houseName,
+  weather,
+}: DashboardHomeContentProps) {
   const row1Links = links.filter((l) => l.row === 1);
   const row2Links = links.filter((l) => l.row === 2);
   const row3Links = links.filter((l) => l.row === 3);
 
   return (
     <div className="w-full flex md:h-[calc(100vh-15rem)] h-[calc(100vh-13rem)] justify-between flex-col items-center md:mt-24 mt-10">
-      <motion.h1
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center"
-      >
-        {houseName}
-      </motion.h1>
+      <div className="text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center"
+        >
+          {houseName}
+        </motion.h1>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+          className="flex items-center justify-end gap-3 mt-2 text-sm text-muted-foreground"
+        >
+          <LiveClock />
+          {weather && (
+            <>
+              <span>·</span>
+              <span className="flex items-center gap-1.5">
+                <WeatherIcon
+                  code={weather.current.weather_code}
+                  isDay={weather.current.is_day}
+                  className="h-4 w-4"
+                />
+                {Math.round(weather.current.temperature)}°F
+              </span>
+            </>
+          )}
+        </motion.div>
+      </div>
 
       <div className="flex flex-col flex-wrap md:gap-6 gap-0 md:max-w-3xl max-w-xl w-full md:mb-28 mb-0">
         {/* Row 1 */}

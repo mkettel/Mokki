@@ -9,6 +9,7 @@ import {
 import { Calendar, DollarSign, MessageCircle, Users } from "lucide-react";
 import Link from "next/link";
 import { DashboardHomeContent } from "@/components/dashboard-home-content";
+import { getHouseWeatherReport } from "@/lib/actions/weather";
 
 export default async function DashboardPage() {
   const { house: activeHouse } = await getActiveHouse();
@@ -17,12 +18,18 @@ export default async function DashboardPage() {
     return null; // Layout will redirect to create-house
   }
 
-  const { members } = await getHouseWithMembers(activeHouse.id);
+  const [{ members }, weatherResult] = await Promise.all([
+    getHouseWithMembers(activeHouse.id),
+    getHouseWeatherReport(activeHouse.id),
+  ]);
   const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
 
   return (
     <>
-      <DashboardHomeContent houseName={activeHouse.name} />
+      <DashboardHomeContent
+        houseName={activeHouse.name}
+        weather={weatherResult.report?.weather ?? null}
+      />
 
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mt-8 hidden">
