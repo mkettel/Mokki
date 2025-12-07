@@ -27,35 +27,35 @@ export default async function DashboardPage() {
 
   return (
     <div className="w-full flex h-[calc(100vh-10rem)] justify-between flex-col items-center mt-10">
-      <h1 className="text-[82px] uppercase text-red font-bold w-full text-center">
+      <h1 className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center">
         {activeHouse.name}
       </h1>
 
-      <div className="flex flex-col flex-wrap gap-6 max-w-3xl w-full mb-28">
-        <div className="flex justify-between">
-          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+      <div className="flex flex-col flex-wrap md:gap-6 gap-0 md:max-w-3xl max-w-xl w-full md:mb-28 mb-12">
+        <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
             Reserve your bed
           </h2>
-          <h2 className="text-5xl uppercase text-background font-boska font-medium ml-12">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium ml-12">
             Pow report
           </h2>
         </div>
-        <div className="flex justify-between">
-          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+        <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
             B-roll
           </h2>
-          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
             Bulletin board
           </h2>
-          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
             Pay up
           </h2>
         </div>
-        <div className="flex justify-between">
-          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+        <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
             Who&apos;s who
           </h2>
-          <h2 className="text-5xl uppercase text-background font-boska font-medium">
+          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
             about you
           </h2>
         </div>
