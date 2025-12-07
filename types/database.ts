@@ -487,6 +487,19 @@ export type OpenMeteoCurrentWeather = {
   weather_code: number;
   cloud_cover: number;
   is_day: boolean;
+  // New fields
+  snow_depth: number; // in inches
+  freezing_level: number; // elevation in feet where temp = 32°F
+  uv_index: number;
+};
+
+export type OpenMeteoHourlyForecast = {
+  time: string[];
+  temperature: number[];
+  precipitation_probability: number[];
+  precipitation: number[];
+  snowfall: number[];
+  weather_code: number[];
 };
 
 export type OpenMeteoDailyForecast = {
@@ -497,10 +510,16 @@ export type OpenMeteoDailyForecast = {
   snowfall_sum: number[];
   precipitation_probability_max: number[];
   weather_code: number[];
+  // New fields
+  sunshine_duration: number[]; // seconds of sunshine
+  sunrise: string[];
+  sunset: string[];
+  uv_index_max: number[];
 };
 
 export type OpenMeteoWeatherData = {
   current: OpenMeteoCurrentWeather;
+  hourly: OpenMeteoHourlyForecast;
   daily: OpenMeteoDailyForecast;
 };
 

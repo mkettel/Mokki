@@ -43,6 +43,16 @@ async function fetchOpenMeteoWeather(
       "weather_code",
       "cloud_cover",
       "is_day",
+      "snow_depth",
+      "freezing_level_height",
+      "uv_index",
+    ].join(","),
+    hourly: [
+      "temperature_2m",
+      "precipitation_probability",
+      "precipitation",
+      "snowfall",
+      "weather_code",
     ].join(","),
     daily: [
       "temperature_2m_max",
@@ -51,6 +61,10 @@ async function fetchOpenMeteoWeather(
       "snowfall_sum",
       "precipitation_probability_max",
       "weather_code",
+      "sunshine_duration",
+      "sunrise",
+      "sunset",
+      "uv_index_max",
     ].join(","),
     temperature_unit: "fahrenheit",
     wind_speed_unit: "mph",
@@ -85,6 +99,11 @@ async function fetchOpenMeteoWeather(
   }
 
   // Transform to our format
+  // Convert snow depth from meters to inches
+  const snowDepthInches = (data.current.snow_depth || 0) * 39.3701;
+  // Convert freezing level from meters to feet
+  const freezingLevelFeet = (data.current.freezing_level_height || 0) * 3.28084;
+
   return {
     current: {
       temperature: data.current.temperature_2m,
@@ -97,6 +116,17 @@ async function fetchOpenMeteoWeather(
       weather_code: data.current.weather_code,
       cloud_cover: data.current.cloud_cover,
       is_day: data.current.is_day === 1,
+      snow_depth: snowDepthInches,
+      freezing_level: freezingLevelFeet,
+      uv_index: data.current.uv_index || 0,
+    },
+    hourly: {
+      time: data.hourly.time,
+      temperature: data.hourly.temperature_2m,
+      precipitation_probability: data.hourly.precipitation_probability,
+      precipitation: data.hourly.precipitation,
+      snowfall: data.hourly.snowfall,
+      weather_code: data.hourly.weather_code,
     },
     daily: {
       time: data.daily.time,
@@ -106,6 +136,10 @@ async function fetchOpenMeteoWeather(
       snowfall_sum: data.daily.snowfall_sum,
       precipitation_probability_max: data.daily.precipitation_probability_max,
       weather_code: data.daily.weather_code,
+      sunshine_duration: data.daily.sunshine_duration,
+      sunrise: data.daily.sunrise,
+      sunset: data.daily.sunset,
+      uv_index_max: data.daily.uv_index_max,
     },
   };
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Resort, WeatherReport } from "@/types/database";
 import { WeatherGrid } from "./weather-grid";
 import { CurrentConditionsCard } from "./current-conditions-card";
+import { HourlyForecastCard } from "./hourly-forecast-card";
 import { SnowForecastCard } from "./snow-forecast-card";
 import { WebcamGallery } from "./webcam-gallery";
 import { FavoriteResortsPicker } from "./favorite-resorts-picker";
@@ -101,6 +102,8 @@ export function SnowReportContent({
                 resortName={selectedReport.resort.name}
                 elevation={selectedReport.resort.elevation_summit}
               />
+
+              <HourlyForecastCard weather={selectedReport.weather} />
 
               <SnowForecastCard weather={selectedReport.weather} />
 
