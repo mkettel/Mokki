@@ -39,7 +39,10 @@ interface UserStaysHistoryProps {
   currentUserId: string;
 }
 
-export function UserStaysHistory({ stays, currentUserId }: UserStaysHistoryProps) {
+export function UserStaysHistory({
+  stays,
+  currentUserId,
+}: UserStaysHistoryProps) {
   const router = useRouter();
   const [settlingId, setSettlingId] = useState<string | null>(null);
 
@@ -84,8 +87,8 @@ export function UserStaysHistory({ stays, currentUserId }: UserStaysHistoryProps
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            You haven&apos;t had any stays with guests yet. When you book a stay and add guests,
-            you&apos;ll see your history here.
+            You haven&apos;t had any stays with guests yet. When you book a stay
+            and add guests, you&apos;ll see your history here.
           </p>
         </CardContent>
       </Card>
@@ -123,14 +126,18 @@ export function UserStaysHistory({ stays, currentUserId }: UserStaysHistoryProps
                     </span>
                     <Badge variant="outline" className="text-xs gap-1">
                       <Users className="h-3 w-3" />
-                      {stay.guest_count} guest{stay.guest_count !== 1 ? "s" : ""}
+                      {stay.guest_count} guest
+                      {stay.guest_count !== 1 ? "s" : ""}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {format(checkIn, "MMM d")} - {format(checkOut, "MMM d, yyyy")}
+                    {format(checkIn, "MMM d")} -{" "}
+                    {format(checkOut, "MMM d, yyyy")}
                   </p>
                   {stay.notes && (
-                    <p className="text-sm text-muted-foreground">{stay.notes}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {stay.notes}
+                    </p>
                   )}
                   {userSplit && (
                     <div className="flex items-center gap-2">
