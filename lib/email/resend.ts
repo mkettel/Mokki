@@ -15,7 +15,7 @@ export async function sendInviteEmail({
 }) {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || "Mökki <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM_EMAIL || "https://resend.com/",
       to: [to],
       subject: `You're invited to join ${houseName} on Mökki`,
       html: getInviteEmailHtml({ houseName, inviterName, signUpUrl }),
