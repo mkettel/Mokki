@@ -8,7 +8,7 @@ interface DashboardHomeContentProps {
 
 const links = [
   { href: "/dashboard/calendar", label: "Reserve your bed", row: 1 },
-  { href: "/dashboard/expenses", label: "Pow report", row: 1 },
+  { href: "/dashboard/snow-report", label: "Pow report", row: 1 },
   { href: "/dashboard/expenses", label: "B-roll", row: 2 },
   { href: "/dashboard/bulletin-board", label: "Bulletin board", row: 2 },
   { href: "/dashboard/expenses", label: "Pay up", row: 2 },

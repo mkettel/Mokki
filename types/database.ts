@@ -21,6 +21,13 @@ export type MessageType = "text" | "system";
 export type RiderType = "skier" | "snowboarder" | "both";
 export type BulletinCategory = "wifi" | "house_rules" | "emergency" | "local_tips";
 
+// Webcam configuration for resorts
+export type WebcamConfig = {
+  name: string;
+  url: string;
+  type: "image" | "embed";
+};
+
 export interface Database {
   public: {
     Tables: {
@@ -59,6 +66,8 @@ export interface Database {
           name: string;
           address: string | null;
           settings: Json;
+          resort_id: string | null;
+          favorite_resort_ids: string[];
           created_at: string;
           updated_at: string;
         };
@@ -67,6 +76,8 @@ export interface Database {
           name: string;
           address?: string | null;
           settings?: Json;
+          resort_id?: string | null;
+          favorite_resort_ids?: string[];
           created_at?: string;
           updated_at?: string;
         };
@@ -74,6 +85,59 @@ export interface Database {
           name?: string;
           address?: string | null;
           settings?: Json;
+          resort_id?: string | null;
+          favorite_resort_ids?: string[];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "houses_resort_id_fkey";
+            columns: ["resort_id"];
+            isOneToOne: false;
+            referencedRelation: "resorts";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      resorts: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          latitude: number;
+          longitude: number;
+          elevation_base: number | null;
+          elevation_summit: number | null;
+          timezone: string;
+          website_url: string | null;
+          webcam_urls: WebcamConfig[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          latitude: number;
+          longitude: number;
+          elevation_base?: number | null;
+          elevation_summit?: number | null;
+          timezone?: string;
+          website_url?: string | null;
+          webcam_urls?: WebcamConfig[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          slug?: string;
+          latitude?: number;
+          longitude?: number;
+          elevation_base?: number | null;
+          elevation_summit?: number | null;
+          timezone?: string;
+          website_url?: string | null;
+          webcam_urls?: WebcamConfig[];
           updated_at?: string;
         };
         Relationships: [];
@@ -402,4 +466,47 @@ export type BulletinItem = Database["public"]["Tables"]["bulletin_items"]["Row"]
 
 export type BulletinItemWithProfile = BulletinItem & {
   profiles: Profile;
+};
+
+// Resort types
+export type Resort = Database["public"]["Tables"]["resorts"]["Row"];
+
+export type HouseWithResort = House & {
+  resorts: Resort | null;
+};
+
+// Open-Meteo API response types
+export type OpenMeteoCurrentWeather = {
+  temperature: number;
+  apparent_temperature: number;
+  precipitation: number;
+  snowfall: number;
+  wind_speed: number;
+  wind_direction: number;
+  wind_gusts: number;
+  weather_code: number;
+  cloud_cover: number;
+  is_day: boolean;
+};
+
+export type OpenMeteoDailyForecast = {
+  time: string[];
+  temperature_max: number[];
+  temperature_min: number[];
+  precipitation_sum: number[];
+  snowfall_sum: number[];
+  precipitation_probability_max: number[];
+  weather_code: number[];
+};
+
+export type OpenMeteoWeatherData = {
+  current: OpenMeteoCurrentWeather;
+  daily: OpenMeteoDailyForecast;
+};
+
+// Combined weather report for UI
+export type WeatherReport = {
+  resort: Resort;
+  weather: OpenMeteoWeatherData;
+  fetchedAt: string;
 };

@@ -11,6 +11,7 @@ import {
   Users,
   User,
   StickyNote,
+  Snowflake,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
@@ -32,9 +33,10 @@ interface DashboardNavProps {
 const navItems = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
+  { href: "/dashboard/snow-report", label: "Snow", icon: Snowflake },
   { href: "/dashboard/bulletin-board", label: "Board", icon: StickyNote },
   { href: "/dashboard/expenses", label: "Expenses", icon: DollarSign },
-  { href: "/dashboard/chat", label: "Chat", icon: MessageCircle },
+  // { href: "/dashboard/chat", label: "Chat", icon: MessageCircle },
   { href: "/dashboard/members", label: "Members", icon: Users },
   { href: "/dashboard/account", label: "Account", icon: User },
 ];

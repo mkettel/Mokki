@@ -118,7 +118,9 @@ export async function getUserHouses() {
         id,
         name,
         address,
-        settings
+        settings,
+        resort_id,
+        favorite_resort_ids
       )
     `)
     .eq("user_id", user.id)
