@@ -33,31 +33,52 @@ export default async function DashboardPage() {
 
       <div className="flex flex-col flex-wrap md:gap-6 gap-0 md:max-w-3xl max-w-xl w-full md:mb-28 mb-12">
         <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
+          <a
+            href="/dashboard/calendar"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
+          >
             Reserve your bed
-          </h2>
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium ml-12">
+          </a>
+          <a
+            href="/dashboard/expenses"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium ml-12"
+          >
             Pow report
-          </h2>
+          </a>
         </div>
         <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
+          <a
+            href="/dashboard/expenses"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
+          >
             B-roll
-          </h2>
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
+          </a>
+          <a
+            href="/dashboard/expenses"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
+          >
             Bulletin board
-          </h2>
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
+          </a>
+          <a
+            href="/dashboard/expenses"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
+          >
             Pay up
-          </h2>
+          </a>
         </div>
         <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
+          <a
+            href="/dashboard/members"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
+          >
             Who&apos;s who
-          </h2>
-          <h2 className="md:text-5xl text-4xl uppercase text-background font-boska font-medium">
+          </a>
+          <a
+            href="/dashboard/settings"
+            className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
+          >
             about you
-          </h2>
+          </a>
         </div>
       </div>
 
