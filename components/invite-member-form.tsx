@@ -57,8 +57,8 @@ export function InviteMemberForm({ houseId }: InviteMemberFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-3">
-      <div className="flex-1 space-y-2">
+    <form onSubmit={handleSubmit} className="flex items-center gap-3">
+      <div className="flex-1">
         <Label htmlFor="email" className="sr-only">
           Email address
         </Label>
