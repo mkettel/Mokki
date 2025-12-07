@@ -12,7 +12,7 @@ import {
   addMonths,
   subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,7 @@ interface Stay {
   check_in: string;
   check_out: string;
   notes: string | null;
+  guest_count: number;
   profiles: {
     id: string;
     email: string;
@@ -165,16 +166,24 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
                     <div
                       key={stay.id}
                       className={cn(
-                        "text-xs px-1 py-0.5 rounded text-black truncate",
+                        "text-xs px-1 py-0.5 rounded text-black truncate flex items-center gap-0.5",
                         getUserColor(stay.profiles?.id || "unknown")
                       )}
                       title={`${
                         stay.profiles?.display_name || stay.profiles?.email
-                      }: ${stay.notes || "No notes"}`}
+                      }${stay.guest_count > 0 ? ` (+${stay.guest_count} guest${stay.guest_count !== 1 ? "s" : ""})` : ""}${stay.notes ? `: ${stay.notes}` : ""}`}
                     >
-                      {stay.profiles?.display_name?.split(" ")[0] ||
-                        stay.profiles?.email?.split("@")[0] ||
-                        "Unknown"}
+                      <span className="truncate">
+                        {stay.profiles?.display_name?.split(" ")[0] ||
+                          stay.profiles?.email?.split("@")[0] ||
+                          "Unknown"}
+                      </span>
+                      {stay.guest_count > 0 && (
+                        <span className="flex items-center gap-0.5 flex-shrink-0">
+                          <Users className="h-2.5 w-2.5" />
+                          {stay.guest_count}
+                        </span>
+                      )}
                     </div>
                   ))}
                   {dayStays.length > 3 && (

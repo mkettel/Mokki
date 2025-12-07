@@ -1,13 +1,23 @@
 "use client";
 
 import { format, isPast, isToday, isFuture } from "date-fns";
-import { Calendar, Trash2 } from "lucide-react";
+import { Calendar, Trash2, Users, DollarSign, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { deleteStay } from "@/lib/actions/stays";
+import { settleGuestFee, unsettleGuestFee } from "@/lib/actions/guest-fees";
+import { EditStayDialog } from "./edit-stay-dialog";
+
+interface ExpenseSplit {
+  id: string;
+  user_id: string;
+  amount: number;
+  settled: boolean;
+  settled_at: string | null;
+}
 
 interface Stay {
   id: string;
@@ -15,10 +25,16 @@ interface Stay {
   check_out: string;
   notes: string | null;
   user_id: string;
+  guest_count: number;
   profiles: {
     id: string;
     email: string;
     display_name: string | null;
+  } | null;
+  expenses: {
+    id: string;
+    amount: number;
+    expense_splits: ExpenseSplit[];
   } | null;
 }
 
@@ -54,25 +70,52 @@ export function StaysList({ stays, currentUserId, title = "Stays", showAll = fal
 
   const displayStays = showAll ? stays : [...currentStays, ...upcomingStays].slice(0, 10);
 
+  const [settlingId, setSettlingId] = useState<string | null>(null);
+
   const handleDelete = async (stayId: string) => {
     if (!confirm("Are you sure you want to delete this stay?")) return;
 
     setDeletingId(stayId);
-    const supabase = createClient();
 
     try {
-      const { error } = await supabase
-        .from("stays")
-        .delete()
-        .eq("id", stayId);
-
-      if (error) throw error;
+      const result = await deleteStay(stayId);
+      if (result.error) throw new Error(result.error);
       router.refresh();
     } catch (err) {
       console.error("Error deleting stay:", err);
       alert("Failed to delete stay");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleSettle = async (splitId: string) => {
+    setSettlingId(splitId);
+
+    try {
+      const result = await settleGuestFee(splitId);
+      if (result.error) throw new Error(result.error);
+      router.refresh();
+    } catch (err) {
+      console.error("Error settling fee:", err);
+      alert("Failed to settle fee");
+    } finally {
+      setSettlingId(null);
+    }
+  };
+
+  const handleUnsettle = async (splitId: string) => {
+    setSettlingId(splitId);
+
+    try {
+      const result = await unsettleGuestFee(splitId);
+      if (result.error) throw new Error(result.error);
+      router.refresh();
+    } catch (err) {
+      console.error("Error unsettling fee:", err);
+      alert("Failed to unmark as paid");
+    } finally {
+      setSettlingId(null);
     }
   };
 
@@ -125,6 +168,10 @@ export function StaysList({ stays, currentUserId, title = "Stays", showAll = fal
             const isOwner = stay.user_id === currentUserId;
             const checkIn = new Date(stay.check_in);
             const checkOut = new Date(stay.check_out);
+            const userSplit = stay.expenses?.expense_splits.find(
+              (s) => s.user_id === currentUserId
+            );
+            const isSettled = userSplit?.settled ?? false;
 
             return (
               <div
@@ -139,36 +186,93 @@ export function StaysList({ stays, currentUserId, title = "Stays", showAll = fal
                         "?"}
                     </span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium text-sm">
                         {stay.profiles?.display_name || stay.profiles?.email}
                       </span>
                       <Badge variant={status.variant} className="text-xs">
                         {status.label}
                       </Badge>
+                      {stay.guest_count > 0 && (
+                        <Badge variant="outline" className="text-xs gap-1">
+                          <Users className="h-3 w-3" />
+                          {stay.guest_count}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {format(checkIn, "MMM d")} - {format(checkOut, "MMM d, yyyy")}
                     </p>
                     {stay.notes && (
-                      <p className="text-sm text-muted-foreground mt-1">
+                      <p className="text-sm text-muted-foreground">
                         {stay.notes}
                       </p>
                     )}
+                    {stay.expenses && userSplit && (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-sm flex items-center gap-1">
+                          <DollarSign className="h-3 w-3" />
+                          {userSplit.amount}
+                        </span>
+                        {isSettled ? (
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-green-50 text-green-700 border-green-200"
+                          >
+                            <Check className="h-3 w-3 mr-1" />
+                            Paid
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200"
+                          >
+                            Unpaid
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
-                {isOwner && !isPast(checkOut) && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={() => handleDelete(stay.id)}
-                    disabled={deletingId === stay.id}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
+                <div className="flex items-center gap-1">
+                  {isOwner && userSplit && !isSettled && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-xs"
+                      onClick={() => handleSettle(userSplit.id)}
+                      disabled={settlingId === userSplit.id}
+                    >
+                      {settlingId === userSplit.id ? "..." : "Mark Paid"}
+                    </Button>
+                  )}
+                  {isOwner && userSplit && isSettled && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-xs text-muted-foreground"
+                      onClick={() => handleUnsettle(userSplit.id)}
+                      disabled={settlingId === userSplit.id}
+                    >
+                      {settlingId === userSplit.id ? "..." : "Unmark"}
+                    </Button>
+                  )}
+                  {isOwner && !isPast(checkOut) && (
+                    <>
+                      <EditStayDialog stay={stay} />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDelete(stay.id)}
+                        disabled={deletingId === stay.id}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}

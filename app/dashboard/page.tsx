@@ -74,7 +74,7 @@ export default async function DashboardPage() {
             Who&apos;s who
           </a>
           <a
-            href="/dashboard/settings"
+            href="/dashboard/account"
             className="md:text-5xl text-4xl hover:line-through uppercase text-background font-boska font-medium"
           >
             about you

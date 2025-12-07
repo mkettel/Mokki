@@ -16,7 +16,7 @@ export type HouseSettings = {
 
 export type MemberRole = "admin" | "member";
 export type InviteStatus = "pending" | "accepted";
-export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other";
+export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other" | "guest_fees";
 export type MessageType = "text" | "system";
 
 export interface Database {
@@ -125,6 +125,8 @@ export interface Database {
           check_in: string;
           check_out: string;
           notes: string | null;
+          guest_count: number;
+          linked_expense_id: string | null;
           created_at: string;
         };
         Insert: {
@@ -134,12 +136,16 @@ export interface Database {
           check_in: string;
           check_out: string;
           notes?: string | null;
+          guest_count?: number;
+          linked_expense_id?: string | null;
           created_at?: string;
         };
         Update: {
           check_in?: string;
           check_out?: string;
           notes?: string | null;
+          guest_count?: number;
+          linked_expense_id?: string | null;
         };
         Relationships: [
           {
@@ -318,4 +324,21 @@ export type ExpenseWithPaidBy = Expense & {
 
 export type MessageWithProfile = Message & {
   profiles: Profile;
+};
+
+// Stay with guest fees and expense info
+export type StayWithGuestFees = Stay & {
+  profiles: Profile;
+  expenses: (Expense & {
+    expense_splits: ExpenseSplit[];
+  }) | null;
+};
+
+// User guest fee summary for account page
+export type UserGuestFeeSummary = {
+  totalStays: number;
+  totalGuests: number;
+  totalAmount: number;
+  settledAmount: number;
+  unsettledAmount: number;
 };

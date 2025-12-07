@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
-import { CalendarIcon, Plus, Minus, Users } from "lucide-react";
-import { createStay } from "@/lib/actions/stays";
+import { format, isPast } from "date-fns";
+import { CalendarIcon, Plus, Minus, Users, Pencil } from "lucide-react";
+import { updateStay } from "@/lib/actions/stays";
 import { GUEST_FEE_PER_NIGHT } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,19 +25,40 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-interface AddStayDialogProps {
-  houseId: string;
+interface Stay {
+  id: string;
+  check_in: string;
+  check_out: string;
+  notes: string | null;
+  guest_count: number;
+  user_id: string;
 }
 
-export function AddStayDialog({ houseId }: AddStayDialogProps) {
+interface EditStayDialogProps {
+  stay: Stay;
+  trigger?: React.ReactNode;
+}
+
+export function EditStayDialog({ stay, trigger }: EditStayDialogProps) {
   const [open, setOpen] = useState(false);
-  const [checkIn, setCheckIn] = useState<Date>();
-  const [checkOut, setCheckOut] = useState<Date>();
-  const [notes, setNotes] = useState("");
-  const [guestCount, setGuestCount] = useState(0);
+  const [checkIn, setCheckIn] = useState<Date>(new Date(stay.check_in));
+  const [checkOut, setCheckOut] = useState<Date>(new Date(stay.check_out));
+  const [notes, setNotes] = useState(stay.notes || "");
+  const [guestCount, setGuestCount] = useState(stay.guest_count);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (open) {
+      setCheckIn(new Date(stay.check_in));
+      setCheckOut(new Date(stay.check_out));
+      setNotes(stay.notes || "");
+      setGuestCount(stay.guest_count);
+      setError(null);
+    }
+  }, [open, stay]);
 
   // Calculate nights and cost
   const nights =
@@ -50,6 +71,9 @@ export function AddStayDialog({ houseId }: AddStayDialogProps) {
         )
       : 0;
   const totalCost = guestCount * GUEST_FEE_PER_NIGHT * nights;
+
+  // Check if stay has ended (can't edit past stays)
+  const stayEnded = isPast(new Date(stay.check_out));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,47 +94,46 @@ export function AddStayDialog({ houseId }: AddStayDialogProps) {
 
     try {
       const formData = new FormData();
-      formData.append("house_id", houseId);
       formData.append("check_in", format(checkIn, "yyyy-MM-dd"));
       formData.append("check_out", format(checkOut, "yyyy-MM-dd"));
       formData.append("notes", notes.trim());
       formData.append("guest_count", guestCount.toString());
 
-      const result = await createStay(formData);
+      const result = await updateStay(stay.id, formData);
 
       if (result.error) {
         setError(result.error);
         return;
       }
 
-      // Reset form and close
-      setCheckIn(undefined);
-      setCheckOut(undefined);
-      setNotes("");
-      setGuestCount(0);
       setOpen(false);
       router.refresh();
     } catch (err) {
-      console.error("Error creating stay:", err);
-      setError("Failed to add stay. Please try again.");
+      console.error("Error updating stay:", err);
+      setError("Failed to update stay. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (stayEnded) {
+    return null;
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Stay
-        </Button>
+        {trigger || (
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Your Stay</DialogTitle>
+          <DialogTitle>Edit Stay</DialogTitle>
           <DialogDescription>
-            Let everyone know when you&apos;ll be at the house.
+            Update your stay details and guest count.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -134,8 +157,7 @@ export function AddStayDialog({ houseId }: AddStayDialogProps) {
                   <Calendar
                     mode="single"
                     selected={checkIn}
-                    onSelect={setCheckIn}
-                    disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                    onSelect={(date) => date && setCheckIn(date)}
                   />
                 </PopoverContent>
               </Popover>
@@ -160,11 +182,8 @@ export function AddStayDialog({ houseId }: AddStayDialogProps) {
                   <Calendar
                     mode="single"
                     selected={checkOut}
-                    onSelect={setCheckOut}
-                    disabled={(date) =>
-                      date < new Date(new Date().setHours(0, 0, 0, 0)) ||
-                      (checkIn ? date < checkIn : false)
-                    }
+                    onSelect={(date) => date && setCheckOut(date)}
+                    disabled={(date) => (checkIn ? date < checkIn : false)}
                   />
                 </PopoverContent>
               </Popover>
@@ -214,7 +233,7 @@ export function AddStayDialog({ houseId }: AddStayDialogProps) {
 
           {guestCount > 0 && nights > 0 && (
             <div className="rounded-lg bg-muted p-3">
-              <p className="text-sm font-medium">Guest Fee Preview</p>
+              <p className="text-sm font-medium">Guest Fee</p>
               <p className="text-xs text-muted-foreground mt-1">
                 {guestCount} guest{guestCount !== 1 ? "s" : ""} × {nights} night
                 {nights !== 1 ? "s" : ""} × ${GUEST_FEE_PER_NIGHT} ={" "}
@@ -236,7 +255,7 @@ export function AddStayDialog({ houseId }: AddStayDialogProps) {
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Adding..." : "Add Stay"}
+              {isLoading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>
