@@ -39,13 +39,13 @@ export function DashboardNav({ house }: DashboardNavProps) {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto max-w-6xl">
         <div className="flex h-14 items-center justify-between px-4">
           {/* Logo and House Name */}
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <Mountain className="h-5 w-5" />
+              {/* <Mountain className="h-5 w-5" /> */}
               <span className="font-semibold hidden sm:inline uppercase">
                 Mökki
               </span>
@@ -57,7 +57,7 @@ export function DashboardNav({ house }: DashboardNavProps) {
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden  items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -85,7 +85,7 @@ export function DashboardNav({ house }: DashboardNavProps) {
           {/* Right side */}
           <div className="flex items-center gap-2">
             <ThemeSwitcher />
-            <LogoutButton />
+            {/* <LogoutButton /> */}
           </div>
         </div>
 
