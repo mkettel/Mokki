@@ -1,5 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
-import { getUserHouses, getHouseWithMembers } from "@/lib/actions/house";
+import { getActiveHouse, getHouseWithMembers } from "@/lib/actions/house";
 import {
   Card,
   CardContent,
@@ -12,12 +11,7 @@ import Link from "next/link";
 import { DashboardHomeContent } from "@/components/dashboard-home-content";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  console.log(data);
-
-  const { houses } = await getUserHouses();
-  const activeHouse = houses[0];
+  const { house: activeHouse } = await getActiveHouse();
 
   if (!activeHouse) {
     return null; // Layout will redirect to create-house

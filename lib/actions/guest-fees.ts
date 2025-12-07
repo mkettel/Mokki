@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import { GUEST_FEE_PER_NIGHT } from "@/lib/constants";
 import type { UserGuestFeeSummary } from "@/types/database";
 
-// Get user's guest fee summary across all houses
-export async function getUserGuestFeesSummary(): Promise<{
+// Get user's guest fee summary for a specific house
+export async function getUserGuestFeesSummary(houseId: string): Promise<{
   summary: UserGuestFeeSummary | null;
   error: string | null;
 }> {
@@ -19,11 +19,12 @@ export async function getUserGuestFeesSummary(): Promise<{
     return { summary: null, error: "Not authenticated" };
   }
 
-  // Get all stays with guests for this user
+  // Get all stays with guests for this user in this house
   const { data: stays, error: staysError } = await supabase
     .from("stays")
     .select("id, guest_count, linked_expense_id")
     .eq("user_id", user.id)
+    .eq("house_id", houseId)
     .gt("guest_count", 0);
 
   if (staysError) {
@@ -119,8 +120,8 @@ type StayWithHouseAndExpense = {
   } | null;
 };
 
-// Get all stays with guest fees for a user (for account page)
-export async function getUserStaysWithGuestFees(): Promise<{
+// Get all stays with guest fees for a user in a specific house (for account page)
+export async function getUserStaysWithGuestFees(houseId: string): Promise<{
   stays: StayWithHouseAndExpense[];
   error: string | null;
 }> {
@@ -145,6 +146,7 @@ export async function getUserStaysWithGuestFees(): Promise<{
     `
     )
     .eq("user_id", user.id)
+    .eq("house_id", houseId)
     .gt("guest_count", 0)
     .order("check_in", { ascending: false });
 

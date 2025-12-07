@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useActionState } from "react";
+import { createHouse } from "@/lib/actions/house";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,67 +15,16 @@ import { Label } from "@/components/ui/label";
 import { Mountain } from "lucide-react";
 
 export function CreateHouseForm() {
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    if (!name.trim()) {
-      setError("House name is required");
-      setIsLoading(false);
-      return;
-    }
-
-    const supabase = createClient();
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setError("You must be logged in");
-        return;
-      }
-
-      // Create the house
-      const { data: house, error: houseError } = await supabase
-        .from("houses")
-        .insert({
-          name: name.trim(),
-          address: address.trim() || null,
-          settings: {},
-        })
-        .select()
-        .single();
-
-      if (houseError) throw houseError;
-
-      // Add creator as admin
-      const { error: memberError } = await supabase
-        .from("house_members")
-        .insert({
-          house_id: house.id,
-          user_id: user.id,
-          role: "admin",
-          invite_status: "accepted",
-          joined_at: new Date().toISOString(),
-        });
-
-      if (memberError) throw memberError;
-
-      router.push("/dashboard");
-      router.refresh();
-    } catch (err) {
-      console.error("Error creating house:", err);
-      setError("Failed to create house. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [state, formAction, isPending] = useActionState<
+    { error: string | null },
+    FormData
+  >(
+    async (_prevState, formData) => {
+      const result = await createHouse(formData);
+      return result || { error: null };
+    },
+    { error: null }
+  );
 
   return (
     <Card>
@@ -90,32 +38,30 @@ export function CreateHouseForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit}>
+        <form action={formAction}>
           <div className="flex flex-col gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name">House Name *</Label>
               <Input
                 id="name"
+                name="name"
                 type="text"
                 placeholder="Tahoe Ski House 2024"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="address">Address (optional)</Label>
               <Input
                 id="address"
+                name="address"
                 type="text"
                 placeholder="123 Mountain Rd, Lake Tahoe, CA"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
               />
             </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create House"}
+            {state.error && <p className="text-sm text-red-500">{state.error}</p>}
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? "Creating..." : "Create House"}
             </Button>
           </div>
         </form>

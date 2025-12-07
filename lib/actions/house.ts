@@ -3,6 +3,48 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+
+const ACTIVE_HOUSE_COOKIE = "mokki_active_house";
+
+export async function setActiveHouseId(houseId: string) {
+  const cookieStore = await cookies();
+  cookieStore.set(ACTIVE_HOUSE_COOKIE, houseId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 365, // 1 year
+    path: "/",
+  });
+  revalidatePath("/dashboard");
+}
+
+export async function getActiveHouseId(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get(ACTIVE_HOUSE_COOKIE)?.value;
+}
+
+export async function getActiveHouse() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { house: null, houses: [], error: "Not authenticated" };
+  }
+
+  const { houses } = await getUserHouses();
+
+  if (houses.length === 0) {
+    return { house: null, houses: [], error: null };
+  }
+
+  const activeHouseId = await getActiveHouseId();
+
+  // Find the house matching the cookie, or default to first house
+  const activeHouse = houses.find((h) => h.id === activeHouseId) || houses[0];
+
+  return { house: activeHouse, houses, error: null };
+}
 
 export async function createHouse(formData: FormData) {
   const supabase = await createClient();
@@ -50,6 +92,9 @@ export async function createHouse(formData: FormData) {
     await supabase.from("houses").delete().eq("id", house.id);
     return { error: "Failed to set up house membership" };
   }
+
+  // Set the newly created house as active
+  await setActiveHouseId(house.id);
 
   revalidatePath("/dashboard");
   redirect(`/dashboard`);

@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
 import { ThemeSwitcher } from "./theme-switcher";
+import { HouseSwitcher } from "./house-switcher";
 import { motion } from "framer-motion";
 
 interface House {
@@ -36,7 +37,7 @@ const navItems = [
   { href: "/dashboard/account", label: "Account", icon: User },
 ];
 
-export function DashboardNav({ house }: DashboardNavProps) {
+export function DashboardNav({ house, houses }: DashboardNavProps) {
   const pathname = usePathname();
   const isHomepage = pathname === "/dashboard";
 
@@ -61,9 +62,7 @@ export function DashboardNav({ house }: DashboardNavProps) {
               <span className="font-semibold inline uppercase">Mökki</span>
             </Link>
             <span className="text-muted-foreground">|</span>
-            <span className="font-medium uppercase text-sm truncate max-w-[150px]">
-              {house.name}
-            </span>
+            <HouseSwitcher activeHouse={house} houses={houses} />
           </motion.div>
 
           {/* Right side */}

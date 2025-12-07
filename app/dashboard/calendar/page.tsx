@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getUserHouses } from "@/lib/actions/house";
+import { getActiveHouse } from "@/lib/actions/house";
 import { getHouseStays } from "@/lib/actions/stays";
 import { AddStayDialog } from "@/components/calendar/add-stay-dialog";
 import { StaysCalendar } from "@/components/calendar/stays-calendar";
@@ -13,8 +13,7 @@ export default async function CalendarPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { houses } = await getUserHouses();
-  const activeHouse = houses[0];
+  const { house: activeHouse } = await getActiveHouse();
 
   if (!activeHouse || !user) {
     return null;

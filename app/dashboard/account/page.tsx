@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getActiveHouse } from "@/lib/actions/house";
 import { getUserGuestFeesSummary, getUserStaysWithGuestFees } from "@/lib/actions/guest-fees";
 import { GuestFeeSummary } from "@/components/account/guest-fee-summary";
 import { UserStaysHistory } from "@/components/account/user-stays-history";
@@ -23,14 +24,20 @@ export default async function AccountPage() {
     redirect("/auth/login");
   }
 
+  const { house: activeHouse } = await getActiveHouse();
+
+  if (!activeHouse) {
+    redirect("/create-house");
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("email, display_name, rider_type")
     .eq("id", user.id)
     .single();
 
-  const { summary } = await getUserGuestFeesSummary();
-  const { stays } = await getUserStaysWithGuestFees();
+  const { summary } = await getUserGuestFeesSummary(activeHouse.id);
+  const { stays } = await getUserStaysWithGuestFees(activeHouse.id);
 
   return (
     <div className="space-y-6">

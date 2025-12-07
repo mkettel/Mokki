@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getUserHouses, getHouseWithMembers } from "@/lib/actions/house";
+import { getActiveHouse, getHouseWithMembers } from "@/lib/actions/house";
 import {
   Card,
   CardContent,
@@ -18,8 +18,7 @@ export default async function MembersPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { houses } = await getUserHouses();
-  const activeHouse = houses[0];
+  const { house: activeHouse } = await getActiveHouse();
 
   if (!activeHouse) {
     return null;

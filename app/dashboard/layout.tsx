@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "@/components/dashboard-nav";
-import { getUserHouses, acceptAllPendingInvites } from "@/lib/actions/house";
+import { getActiveHouse, acceptAllPendingInvites } from "@/lib/actions/house";
 
 export const dynamic = "force-dynamic";
 
@@ -22,15 +22,12 @@ export default async function DashboardLayout({
   // Auto-accept any pending invites for this user
   await acceptAllPendingInvites();
 
-  const { houses } = await getUserHouses();
+  const { house: activeHouse, houses } = await getActiveHouse();
 
   // If no houses, redirect to create one
-  if (houses.length === 0) {
+  if (!activeHouse || houses.length === 0) {
     redirect("/create-house");
   }
-
-  // For now, use the first house as the active house
-  const activeHouse = houses[0];
 
   return (
     <div className="min-h-screen flex flex-col">
