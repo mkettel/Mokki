@@ -19,6 +19,7 @@ export type InviteStatus = "pending" | "accepted";
 export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other" | "guest_fees";
 export type MessageType = "text" | "system";
 export type RiderType = "skier" | "snowboarder" | "both";
+export type BulletinCategory = "wifi" | "house_rules" | "emergency" | "local_tips";
 
 export interface Database {
   public: {
@@ -291,6 +292,53 @@ export interface Database {
           }
         ];
       };
+      bulletin_items: {
+        Row: {
+          id: string;
+          house_id: string;
+          category: BulletinCategory | null;
+          title: string;
+          content: string;
+          color: string;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          category?: BulletinCategory | null;
+          title: string;
+          content: string;
+          color?: string;
+          created_by: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          category?: BulletinCategory | null;
+          title?: string;
+          content?: string;
+          color?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "bulletin_items_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bulletin_items_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {};
     Functions: {};
@@ -300,6 +348,7 @@ export interface Database {
       expense_category: ExpenseCategory;
       message_type: MessageType;
       rider_type: RiderType;
+      bulletin_category: BulletinCategory;
     };
     CompositeTypes: {};
   };
@@ -346,4 +395,11 @@ export type UserGuestFeeSummary = {
   totalAmount: number;
   settledAmount: number;
   unsettledAmount: number;
+};
+
+// Bulletin board types
+export type BulletinItem = Database["public"]["Tables"]["bulletin_items"]["Row"];
+
+export type BulletinItemWithProfile = BulletinItem & {
+  profiles: Profile;
 };

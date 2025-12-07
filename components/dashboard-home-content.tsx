@@ -10,7 +10,7 @@ const links = [
   { href: "/dashboard/calendar", label: "Reserve your bed", row: 1 },
   { href: "/dashboard/expenses", label: "Pow report", row: 1 },
   { href: "/dashboard/expenses", label: "B-roll", row: 2 },
-  { href: "/dashboard/expenses", label: "Bulletin board", row: 2 },
+  { href: "/dashboard/bulletin-board", label: "Bulletin board", row: 2 },
   { href: "/dashboard/expenses", label: "Pay up", row: 2 },
   { href: "/dashboard/members", label: "Who's who", row: 3 },
   { href: "/dashboard/account", label: "about you", row: 3 },
