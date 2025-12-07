@@ -1,12 +1,20 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Settings, User } from "lucide-react";
 import { ProfileSettingsForm } from "@/components/profile-settings-form";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/auth/login");
@@ -22,10 +30,7 @@ export default async function SettingsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your account settings
-          </p>
+          <h1 className="text-2xl text-red uppercase font-bold">Settings</h1>
         </div>
         <Card>
           <CardContent className="pt-6">
@@ -39,10 +44,7 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account settings
-        </p>
+        <h1 className="text-2xl text-red uppercase font-bold">Settings</h1>
       </div>
 
       <Card>
@@ -51,9 +53,7 @@ export default async function SettingsPage() {
             <User className="h-5 w-5" />
             Profile
           </CardTitle>
-          <CardDescription>
-            Update your personal information
-          </CardDescription>
+          <CardDescription>Update your personal information</CardDescription>
         </CardHeader>
         <CardContent>
           <ProfileSettingsForm profile={profile} />
@@ -71,9 +71,7 @@ export default async function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            You&apos;ll be able to:
-          </p>
+          <p className="text-muted-foreground">You&apos;ll be able to:</p>
           <ul className="list-disc list-inside mt-2 text-muted-foreground space-y-1">
             <li>Update house name and address</li>
             <li>Add house info (WiFi, rules, local tips)</li>

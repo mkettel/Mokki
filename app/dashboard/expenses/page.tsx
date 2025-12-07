@@ -1,11 +1,17 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { DollarSign } from "lucide-react";
 
 export default function ExpensesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Expenses</h1>
+        <h1 className="text-2xl text-red uppercase font-bold">Expenses</h1>
         <p className="text-muted-foreground">
           Track shared costs and settle up
         </p>
@@ -22,9 +28,7 @@ export default function ExpensesPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            You&apos;ll be able to:
-          </p>
+          <p className="text-muted-foreground">You&apos;ll be able to:</p>
           <ul className="list-disc list-inside mt-2 text-muted-foreground space-y-1">
             <li>Log expenses (groceries, utilities, supplies)</li>
             <li>Split costs evenly or custom amounts</li>

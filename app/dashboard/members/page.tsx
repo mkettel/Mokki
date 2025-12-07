@@ -1,13 +1,21 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserHouses, getHouseWithMembers } from "@/lib/actions/house";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InviteMemberForm } from "@/components/invite-member-form";
 import { ResendInviteButton } from "@/components/resend-invite-button";
 
 export default async function MembersPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { houses } = await getUserHouses();
   const activeHouse = houses[0];
@@ -17,14 +25,14 @@ export default async function MembersPage() {
   }
 
   const { members } = await getHouseWithMembers(activeHouse.id);
-  const acceptedMembers = members.filter(m => m.invite_status === "accepted");
-  const pendingMembers = members.filter(m => m.invite_status === "pending");
+  const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
+  const pendingMembers = members.filter((m) => m.invite_status === "pending");
   const isAdmin = activeHouse.role === "admin";
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Members</h1>
+        <h1 className="text-2xl text-red uppercase font-bold">Members</h1>
         <p className="text-muted-foreground">
           Manage who has access to {activeHouse.name}
         </p>
@@ -50,19 +58,23 @@ export default async function MembersPage() {
         <CardHeader>
           <CardTitle>Current Members</CardTitle>
           <CardDescription>
-            {acceptedMembers.length} member{acceptedMembers.length !== 1 ? "s" : ""}
+            {acceptedMembers.length} member
+            {acceptedMembers.length !== 1 ? "s" : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {acceptedMembers.map((member) => (
-              <div key={member.id} className="flex items-center justify-between">
+              <div
+                key={member.id}
+                className="flex items-center justify-between"
+              >
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <span className="text-sm font-medium">
                       {member.profiles?.display_name?.[0]?.toUpperCase() ||
-                       member.profiles?.email?.[0]?.toUpperCase() ||
-                       "?"}
+                        member.profiles?.email?.[0]?.toUpperCase() ||
+                        "?"}
                     </span>
                   </div>
                   <div>
@@ -74,7 +86,9 @@ export default async function MembersPage() {
                     </p>
                   </div>
                 </div>
-                <Badge variant={member.role === "admin" ? "default" : "secondary"}>
+                <Badge
+                  variant={member.role === "admin" ? "default" : "secondary"}
+                >
                   {member.role}
                 </Badge>
               </div>
@@ -95,7 +109,10 @@ export default async function MembersPage() {
           <CardContent>
             <div className="space-y-4">
               {pendingMembers.map((member) => (
-                <div key={member.id} className="flex items-center justify-between">
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
                       <span className="text-sm font-medium text-muted-foreground">
@@ -106,9 +123,7 @@ export default async function MembersPage() {
                       <p className="font-medium text-muted-foreground">
                         {member.invited_email}
                       </p>
-                      <p className="text-sm text-muted-foreground">
-                        Invited
-                      </p>
+                      <p className="text-sm text-muted-foreground">Invited</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">

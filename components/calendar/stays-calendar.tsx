@@ -44,7 +44,9 @@ function getUserColor(userId: string): string {
     "bg-indigo-500",
     "bg-rose-500",
   ];
-  const hash = userId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const hash = userId
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 }
 
@@ -77,9 +79,11 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
     return stays.filter((stay) => {
       const checkIn = new Date(stay.check_in);
       const checkOut = new Date(stay.check_out);
-      return isWithinInterval(date, { start: checkIn, end: checkOut }) ||
-             isSameDay(date, checkIn) ||
-             isSameDay(date, checkOut);
+      return (
+        isWithinInterval(date, { start: checkIn, end: checkOut }) ||
+        isSameDay(date, checkIn) ||
+        isSameDay(date, checkOut)
+      );
     });
   };
 
@@ -164,7 +168,9 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
                         "text-xs px-1 py-0.5 rounded text-white truncate",
                         getUserColor(stay.profiles?.id || "unknown")
                       )}
-                      title={`${stay.profiles?.display_name || stay.profiles?.email}: ${stay.notes || "No notes"}`}
+                      title={`${
+                        stay.profiles?.display_name || stay.profiles?.email
+                      }: ${stay.notes || "No notes"}`}
                     >
                       {stay.profiles?.display_name?.split(" ")[0] ||
                         stay.profiles?.email?.split("@")[0] ||
@@ -186,23 +192,22 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
       {/* Legend */}
       {stays.length > 0 && (
         <div className="flex flex-wrap gap-3">
-          {Array.from(new Set(stays.map((s) => s.profiles?.id))).map((userId) => {
-            const stay = stays.find((s) => s.profiles?.id === userId);
-            if (!userId || !stay?.profiles) return null;
-            return (
-              <div key={userId} className="flex items-center gap-1.5 text-sm">
-                <div
-                  className={cn(
-                    "w-3 h-3 rounded-full",
-                    getUserColor(userId)
-                  )}
-                />
-                <span>
-                  {stay.profiles.display_name || stay.profiles.email}
-                </span>
-              </div>
-            );
-          })}
+          {Array.from(new Set(stays.map((s) => s.profiles?.id))).map(
+            (userId) => {
+              const stay = stays.find((s) => s.profiles?.id === userId);
+              if (!userId || !stay?.profiles) return null;
+              return (
+                <div key={userId} className="flex items-center gap-1.5 text-sm">
+                  <div
+                    className={cn("w-3 h-3 rounded-full", getUserColor(userId))}
+                  />
+                  <span>
+                    {stay.profiles.display_name || stay.profiles.email}
+                  </span>
+                </div>
+              );
+            }
+          )}
         </div>
       )}
     </div>

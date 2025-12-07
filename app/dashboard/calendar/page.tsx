@@ -8,7 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function CalendarPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { houses } = await getUserHouses();
   const activeHouse = houses[0];
@@ -23,7 +25,7 @@ export default async function CalendarPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Calendar</h1>
+          <h1 className="text-2xl text-red uppercase font-bold">Calendar</h1>
           <p className="text-muted-foreground">
             See who&apos;s staying at the house and when
           </p>
