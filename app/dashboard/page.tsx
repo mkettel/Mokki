@@ -26,12 +26,12 @@ export default async function DashboardPage() {
   const acceptedMembers = members.filter((m) => m.invite_status === "accepted");
 
   return (
-    <div className="w-full flex h-[calc(100vh-15rem)] justify-between  flex-col items-center mt-24">
+    <div className="w-full flex md:h-[calc(100vh-15rem)] h-[calc(100vh-12rem)] justify-between  flex-col items-center md:mt-24 mt-10">
       <h1 className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center">
         {activeHouse.name}
       </h1>
 
-      <div className="flex flex-col flex-wrap md:gap-6 gap-0 md:max-w-3xl max-w-xl w-full md:mb-28 mb-12">
+      <div className="flex flex-col flex-wrap md:gap-6 gap-0 md:max-w-3xl max-w-xl w-full md:mb-28 mb-0">
         <div className="flex justify-between md:flex-row items-center md:items-start flex-col">
           <a
             href="/dashboard/calendar"
