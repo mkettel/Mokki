@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { InviteMemberForm } from "@/components/invite-member-form";
 import { ResendInviteButton } from "@/components/resend-invite-button";
+import { MemberRoleSelect } from "@/components/member-role-select";
 
 export default async function MembersPage() {
   const supabase = await createClient();
@@ -86,11 +87,19 @@ export default async function MembersPage() {
                     </p>
                   </div>
                 </div>
-                <Badge
-                  variant={member.role === "admin" ? "default" : "secondary"}
-                >
-                  {member.role}
-                </Badge>
+                {isAdmin ? (
+                  <MemberRoleSelect
+                    memberId={member.id}
+                    currentRole={member.role as "admin" | "member"}
+                    isCurrentUser={member.profiles?.id === user?.id}
+                  />
+                ) : (
+                  <Badge
+                    variant={member.role === "admin" ? "default" : "secondary"}
+                  >
+                    {member.role}
+                  </Badge>
+                )}
               </div>
             ))}
           </div>

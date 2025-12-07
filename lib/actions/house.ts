@@ -342,3 +342,66 @@ export async function acceptAllPendingInvites() {
   // The caller should handle revalidation if needed
   return { accepted: invites.length };
 }
+
+export async function updateMemberRole(
+  memberId: string,
+  newRole: "admin" | "member"
+) {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  // Get the member record to find the house_id
+  const { data: targetMember } = await supabase
+    .from("house_members")
+    .select("house_id, user_id, role")
+    .eq("id", memberId)
+    .single();
+
+  if (!targetMember) {
+    return { error: "Member not found" };
+  }
+
+  // Check if current user is admin of this house
+  const { data: currentMembership } = await supabase
+    .from("house_members")
+    .select("role")
+    .eq("house_id", targetMember.house_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (currentMembership?.role !== "admin") {
+    return { error: "Only admins can change member roles" };
+  }
+
+  // Prevent admin from demoting themselves if they're the last admin
+  if (targetMember.user_id === user.id && newRole === "member") {
+    const { count } = await supabase
+      .from("house_members")
+      .select("*", { count: "exact", head: true })
+      .eq("house_id", targetMember.house_id)
+      .eq("role", "admin")
+      .eq("invite_status", "accepted");
+
+    if (count && count <= 1) {
+      return { error: "Cannot remove the last admin. Promote another member first." };
+    }
+  }
+
+  // Update the role
+  const { error: updateError } = await supabase
+    .from("house_members")
+    .update({ role: newRole })
+    .eq("id", memberId);
+
+  if (updateError) {
+    console.error("Error updating member role:", updateError);
+    return { error: "Failed to update role" };
+  }
+
+  revalidatePath("/dashboard/members");
+  return { success: true };
+}
