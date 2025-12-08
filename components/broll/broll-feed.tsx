@@ -52,8 +52,10 @@ export function BRollFeed({ houseId, currentUserId }: BRollFeedProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-black text-lg">No photos or videos yet.</p>
-        <p className="text-black text-sm mt-1">
+        <p className="text-black dark:text-foreground text-lg">
+          No photos or videos yet.
+        </p>
+        <p className="text-black dark:text-foreground text-sm mt-1">
           Upload your first memories to get started!
         </p>
       </div>

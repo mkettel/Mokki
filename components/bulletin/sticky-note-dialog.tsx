@@ -4,7 +4,7 @@ import { useState, useRef, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { createBulletinItem, updateBulletinItem } from "@/lib/actions/bulletin";
-import { BulletinItemWithProfile, BulletinCategory } from "@/types/database";
+import { BulletinItemWithProfile, BulletinCategory, BulletinStyle } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,6 +41,13 @@ const colors = [
   { value: "red", label: "Red", class: "bg-[#53131E]" },
 ];
 
+const styles: { value: BulletinStyle; label: string; icon: string }[] = [
+  { value: "sticky", label: "Sticky Note", icon: "📝" },
+  { value: "paper", label: "Paper", icon: "📄" },
+  { value: "sticker", label: "Sticker", icon: "⭐" },
+  { value: "keychain", label: "Keychain", icon: "🔑" },
+];
+
 interface StickyNoteDialogProps {
   houseId: string;
   editItem?: BulletinItemWithProfile;
@@ -59,6 +66,7 @@ export function StickyNoteDialog({
   const [title, setTitle] = useState(editItem?.title || "");
   const [content, setContent] = useState(editItem?.content || "");
   const [color, setColor] = useState(editItem?.color || "beige");
+  const [style, setStyle] = useState<BulletinStyle>(editItem?.style || "sticky");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -84,6 +92,7 @@ export function StickyNoteDialog({
       formData.append("title", title);
       formData.append("content", content);
       formData.append("color", color);
+      formData.append("style", style);
 
       const result = isEditing
         ? await updateBulletinItem(editItem.id, formData)
@@ -99,6 +108,7 @@ export function StickyNoteDialog({
         setContent("");
         setCategory("none");
         setColor("beige");
+        setStyle("sticky");
       }
       setOpen(false);
       router.refresh();
@@ -117,6 +127,7 @@ export function StickyNoteDialog({
       setTitle(editItem.title);
       setContent(editItem.content);
       setColor(editItem.color);
+      setStyle(editItem.style || "sticky");
     }
   };
 
@@ -213,6 +224,28 @@ export function StickyNoteDialog({
                   )}
                   title={c.label}
                 />
+              ))}
+            </div>
+          </div>
+
+          {/* Style Picker */}
+          <div className="grid gap-2">
+            <Label>Note Style</Label>
+            <div className="flex gap-2">
+              {styles.map((s) => (
+                <button
+                  key={s.value}
+                  type="button"
+                  onClick={() => setStyle(s.value)}
+                  className={cn(
+                    "w-10 h-10 rounded-lg transition-transform flex items-center justify-center text-lg bg-muted hover:bg-muted/80",
+                    style === s.value &&
+                      "ring-2 ring-offset-2 ring-primary scale-110"
+                  )}
+                  title={s.label}
+                >
+                  {s.icon}
+                </button>
               ))}
             </div>
           </div>

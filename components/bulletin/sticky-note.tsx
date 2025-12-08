@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Wifi, Shield, Phone, MapPin, Pencil } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { BulletinCategory, BulletinItemWithProfile } from "@/types/database";
+import { BulletinCategory, BulletinItemWithProfile, BulletinStyle } from "@/types/database";
 import { StickyNoteDialog } from "./sticky-note-dialog";
 import { DeleteNoteButton } from "./delete-note-button";
 import { cn } from "@/lib/utils";
@@ -54,6 +54,99 @@ const noteColors: Record<string, { bg: string; text: string }> = {
   },
 };
 
+// Style-specific container classes
+const styleContainerClasses: Record<BulletinStyle, string> = {
+  sticky: "rounded-sm",
+  paper: "rounded-none",
+  sticker: "rounded-2xl",
+  keychain: "rounded-xl",
+};
+
+// Tape decoration for sticky notes
+function TapeDecoration() {
+  return (
+    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-4 bg-white/60 rounded-sm shadow-sm" />
+  );
+}
+
+// Paper clip decoration for paper notes
+function PaperClipDecoration() {
+  return (
+    <svg
+      className="absolute -top-3 right-4 w-6 h-10 drop-shadow-sm"
+      viewBox="0 0 24 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 2C7.58 2 4 5.58 4 10V30C4 34.42 7.58 38 12 38C16.42 38 20 34.42 20 30V10"
+        stroke="#9CA3AF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M12 8C9.79 8 8 9.79 8 12V28C8 30.21 9.79 32 12 32C14.21 32 16 30.21 16 28V12"
+        stroke="#9CA3AF"
+        strokeWidth="2"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+// Glossy shine overlay for stickers
+function GlossyOverlay() {
+  return (
+    <>
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none" />
+      {/* Peeled corner effect */}
+      <div className="absolute bottom-0 right-0 w-8 h-8 overflow-hidden pointer-events-none">
+        <div className="absolute bottom-0 right-0 w-12 h-12 bg-gradient-to-tl from-black/10 to-transparent transform rotate-45 translate-x-4 translate-y-4" />
+      </div>
+    </>
+  );
+}
+
+// Keychain hole and ring decoration
+function KeychainDecoration() {
+  return (
+    <div className="absolute -top-4 left-1/2 -translate-x-1/2 flex flex-col items-center">
+      {/* Ring */}
+      <svg className="w-8 h-6 drop-shadow-sm" viewBox="0 0 32 24" fill="none">
+        <ellipse
+          cx="16"
+          cy="8"
+          rx="10"
+          ry="6"
+          stroke="#9CA3AF"
+          strokeWidth="3"
+          fill="none"
+        />
+      </svg>
+      {/* Hole */}
+      <div className="w-4 h-4 rounded-full bg-background border-2 border-gray-400 -mt-3 shadow-inner" />
+    </div>
+  );
+}
+
+// Get decoration component based on style
+function StyleDecoration({ style }: { style: BulletinStyle }) {
+  switch (style) {
+    case "sticky":
+      return <TapeDecoration />;
+    case "paper":
+      return <PaperClipDecoration />;
+    case "sticker":
+      return <GlossyOverlay />;
+    case "keychain":
+      return <KeychainDecoration />;
+    default:
+      return <TapeDecoration />;
+  }
+}
+
 interface StickyNoteProps {
   item: BulletinItemWithProfile;
   houseId: string;
@@ -69,6 +162,11 @@ export function StickyNote({ item, houseId, index }: StickyNoteProps) {
 
   const colors = noteColors[item.color] || noteColors.beige;
   const category = item.category ? categoryConfig[item.category] : null;
+  const style = (item.style as BulletinStyle) || "sticky";
+  const containerClass = styleContainerClasses[style];
+
+  // Style-specific adjustments
+  const needsTopPadding = style === "keychain"; // Extra padding for keychain hole
 
   return (
     <motion.div
@@ -81,17 +179,19 @@ export function StickyNote({ item, houseId, index }: StickyNoteProps) {
         boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
       }}
       className={cn(
-        "group relative p-4 min-h-[180px] rounded-sm shadow-md transition-shadow",
+        "group relative p-4 min-h-[180px] shadow-md transition-shadow",
+        containerClass,
         colors.bg,
-        colors.text
+        colors.text,
+        needsTopPadding && "pt-6"
       )}
       style={{
         boxShadow:
           "2px 3px 8px rgba(0,0,0,0.1), -1px -1px 0 rgba(255,255,255,0.5) inset",
       }}
     >
-      {/* Tape effect */}
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-4 bg-white/60 rounded-sm shadow-sm" />
+      {/* Style-specific decoration */}
+      <StyleDecoration style={style} />
 
       {/* Category badge */}
       {category && (

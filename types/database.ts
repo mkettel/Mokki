@@ -20,6 +20,7 @@ export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other" |
 export type MessageType = "text" | "system";
 export type RiderType = "skier" | "snowboarder" | "both";
 export type BulletinCategory = "wifi" | "house_rules" | "emergency" | "local_tips";
+export type BulletinStyle = "sticky" | "paper" | "sticker" | "keychain";
 export type MediaType = "image" | "video";
 
 // Webcam configuration for resorts
@@ -368,6 +369,7 @@ export interface Database {
           title: string;
           content: string;
           color: string;
+          style: BulletinStyle;
           created_by: string;
           created_at: string;
           updated_at: string;
@@ -379,6 +381,7 @@ export interface Database {
           title: string;
           content: string;
           color?: string;
+          style?: BulletinStyle;
           created_by: string;
           created_at?: string;
           updated_at?: string;
@@ -388,6 +391,7 @@ export interface Database {
           title?: string;
           content?: string;
           color?: string;
+          style?: BulletinStyle;
           updated_at?: string;
         };
         Relationships: [

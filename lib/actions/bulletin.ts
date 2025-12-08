@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { BulletinCategory, BulletinItemWithProfile } from "@/types/database";
+import { BulletinCategory, BulletinStyle, BulletinItemWithProfile } from "@/types/database";
 
 export async function getBulletinItems(houseId: string): Promise<{
   items: BulletinItemWithProfile[];
@@ -49,6 +49,7 @@ export async function createBulletinItem(formData: FormData) {
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
   const color = (formData.get("color") as string) || "yellow";
+  const style = (formData.get("style") as BulletinStyle) || "sticky";
 
   if (!houseId || !title || !content) {
     return { error: "Missing required fields" };
@@ -62,6 +63,7 @@ export async function createBulletinItem(formData: FormData) {
       title: title.trim(),
       content: content.trim(),
       color,
+      style,
       created_by: user.id,
     })
     .select()
@@ -90,6 +92,7 @@ export async function updateBulletinItem(itemId: string, formData: FormData) {
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
   const color = formData.get("color") as string;
+  const style = formData.get("style") as BulletinStyle;
 
   if (!title || !content) {
     return { error: "Title and content are required" };
@@ -102,6 +105,7 @@ export async function updateBulletinItem(itemId: string, formData: FormData) {
       title: title.trim(),
       content: content.trim(),
       color,
+      style,
       updated_at: new Date().toISOString(),
     })
     .eq("id", itemId);
