@@ -24,7 +24,7 @@ export default function ExpensesPage() {
             Coming Soon
           </CardTitle>
           <CardDescription>
-            The expense tracking feature is coming in Phase 3
+            The expense tracking feature is coming
           </CardDescription>
         </CardHeader>
         <CardContent>
