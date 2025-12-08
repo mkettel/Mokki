@@ -142,22 +142,28 @@ export function HomepageContent({ isLoggedIn }: HomepageContentProps) {
             ))}
           </div>
 
-          {/* CTA Buttons - for non-logged in users */}
-          {!isLoggedIn && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.8, ease: "easeOut" }}
-              className="flex gap-4 mt-12"
-            >
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.8, ease: "easeOut" }}
+            className="flex gap-4 mt-20"
+          >
+            {isLoggedIn ? (
               <Button asChild size="lg" variant="default">
-                <Link href="/auth/sign-up">Get Started</Link>
+                <Link href="/dashboard">Go to Dashboard</Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/auth/login">Sign In</Link>
-              </Button>
-            </motion.div>
-          )}
+            ) : (
+              <>
+                <Button asChild size="lg" variant="default">
+                  <Link href="/auth/sign-up">Get Started</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/auth/login">Sign In</Link>
+                </Button>
+              </>
+            )}
+          </motion.div>
         </div>
       </main>
 
