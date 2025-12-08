@@ -58,6 +58,16 @@ function LiveClock() {
   );
 }
 
+// Get responsive font size class based on house name length
+function getHouseNameSizeClass(name: string): string {
+  const len = name.length;
+  if (len <= 6) return "md:text-[82px] text-7xl";
+  if (len <= 12) return "md:text-[70px] text-6xl";
+  if (len <= 16) return "md:text-[58px] text-5xl";
+  if (len <= 20) return "md:text-[48px] text-4xl";
+  return "md:text-[40px] text-3xl";
+}
+
 export function DashboardHomeContent({
   houseName,
   weather,
@@ -73,7 +83,9 @@ export function DashboardHomeContent({
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="md:text-[82px] text-7xl uppercase text-red font-bold w-full text-center"
+          className={`${getHouseNameSizeClass(
+            houseName
+          )} uppercase text-red font-bold w-full text-center`}
         >
           {houseName}
         </motion.h1>
