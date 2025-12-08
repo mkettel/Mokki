@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { getActiveHouse, acceptAllPendingInvites } from "@/lib/actions/house";
+import { DashboardShell } from "@/components/dashboard-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -30,12 +31,14 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="geometric-bg" aria-hidden="true" />
-      <DashboardNav house={activeHouse} houses={houses} />
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl relative">
-        {children}
-      </main>
-    </div>
+    <DashboardShell>
+      <div className="min-h-screen flex flex-col">
+        <div className="geometric-bg" aria-hidden="true" />
+        <DashboardNav house={activeHouse} houses={houses} />
+        <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl relative">
+          {children}
+        </main>
+      </div>
+    </DashboardShell>
   );
 }

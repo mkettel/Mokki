@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
 import { ThemeSwitcher } from "./theme-switcher";
+import { SnowToggle } from "./snow-toggle";
 import { HouseSwitcher } from "./house-switcher";
 import { motion } from "framer-motion";
 
@@ -78,6 +79,7 @@ export function DashboardNav({ house, houses }: DashboardNavProps) {
             transition={{ duration: 0.3, delay: 0.15 }}
             className="flex items-center gap-2"
           >
+            <SnowToggle />
             <ThemeSwitcher />
             {/* <LogoutButton /> */}
           </motion.div>

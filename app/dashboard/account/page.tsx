@@ -7,6 +7,7 @@ import { GuestFeeSummary } from "@/components/account/guest-fee-summary";
 import { UserStaysHistory } from "@/components/account/user-stays-history";
 import { ProfileSettingsForm } from "@/components/profile-settings-form";
 import { HouseSettingsForm } from "@/components/house-settings-form";
+import { LogoutButton } from "@/components/logout-button";
 import {
   Card,
   CardContent,
@@ -93,6 +94,10 @@ export default async function AccountPage() {
       <GuestFeeSummary summary={summary} />
 
       <UserStaysHistory stays={stays} currentUserId={user.id} />
+
+      <div className="pt-4">
+        <LogoutButton />
+      </div>
     </div>
   );
 }
