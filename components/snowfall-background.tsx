@@ -59,21 +59,33 @@ export function SnowfallBackground() {
 
   // Handle fade in/out
   useEffect(() => {
+    let rafId1: number;
+    let rafId2: number;
+    let timer: NodeJS.Timeout;
+
     if (enabled) {
       // Fade in: show immediately, then animate opacity
       setVisible(true);
-      // Small delay to ensure DOM is ready before animating
-      requestAnimationFrame(() => {
-        setOpacity(1);
+      // Double requestAnimationFrame ensures the browser has painted with opacity 0
+      // before we transition to opacity 1 (single RAF isn't enough)
+      rafId1 = requestAnimationFrame(() => {
+        rafId2 = requestAnimationFrame(() => {
+          setOpacity(1);
+        });
       });
     } else {
       // Fade out: animate opacity, then hide
       setOpacity(0);
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setVisible(false);
       }, FADE_DURATION);
-      return () => clearTimeout(timer);
     }
+
+    return () => {
+      cancelAnimationFrame(rafId1);
+      cancelAnimationFrame(rafId2);
+      clearTimeout(timer);
+    };
   }, [enabled]);
 
   useEffect(() => {
