@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, X, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -9,6 +9,7 @@ import { HouseNoteWithEditor } from "@/types/database";
 import { updateHouseNote } from "@/lib/actions/house-note";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MarkdownToolbar } from "./markdown-toolbar";
 
 interface HouseNoteProps {
   note: HouseNoteWithEditor | null;
@@ -20,6 +21,7 @@ export function HouseNote({ note, houseId }: HouseNoteProps) {
   const [content, setContent] = useState(note?.content || "");
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSave = () => {
     startTransition(async () => {
@@ -103,22 +105,28 @@ export function HouseNote({ note, houseId }: HouseNoteProps) {
       {/* Content area */}
       <div className="flex-1 p-6 pt-4">
         {isEditing ? (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className={cn(
-              "w-full h-full min-h-[280px]",
-              "bg-transparent",
-              "border-none outline-none resize-none",
-              "text-gray-800 text-sm leading-7",
-              "placeholder:text-gray-400"
-            )}
-            placeholder="Leave a note for the house...
-
-Use markdown for formatting:
-**bold**, *italic*, - bullet lists"
-            autoFocus
-          />
+          <div className="flex flex-col h-full">
+            <MarkdownToolbar
+              textareaRef={textareaRef}
+              value={content}
+              onChange={setContent}
+              className="mb-2 pb-2 border-b border-gray-200"
+            />
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className={cn(
+                "w-full flex-1 min-h-[250px]",
+                "bg-transparent",
+                "border-none outline-none resize-none",
+                "text-gray-800 text-sm leading-7",
+                "placeholder:text-gray-400"
+              )}
+              placeholder="Leave a note for the house..."
+              autoFocus
+            />
+          </div>
         ) : isEmpty ? (
           <button
             onClick={() => setIsEditing(true)}

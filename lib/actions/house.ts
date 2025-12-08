@@ -16,7 +16,8 @@ export async function setActiveHouseId(houseId: string) {
     maxAge: 60 * 60 * 24 * 365, // 1 year
     path: "/",
   });
-  revalidatePath("/dashboard");
+  // Revalidate all dashboard pages when switching houses
+  revalidatePath("/dashboard", "layout");
 }
 
 export async function getActiveHouseId(): Promise<string | undefined> {
@@ -392,6 +393,55 @@ export async function acceptAllPendingInvites() {
   // Note: Don't call revalidatePath here as this may be called during render
   // The caller should handle revalidation if needed
   return { accepted: invites.length };
+}
+
+export async function updateHouse(houseId: string, formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  // Check if current user is admin of this house
+  const { data: membership } = await supabase
+    .from("house_members")
+    .select("role")
+    .eq("house_id", houseId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (membership?.role !== "admin") {
+    return { error: "Only admins can update house settings" };
+  }
+
+  const name = formData.get("name") as string;
+  const address = formData.get("address") as string | null;
+  const resortId = formData.get("resort_id") as string | null;
+
+  if (!name || name.trim().length === 0) {
+    return { error: "House name is required" };
+  }
+
+  const { error: updateError } = await supabase
+    .from("houses")
+    .update({
+      name: name.trim(),
+      address: address?.trim() || null,
+      resort_id: resortId?.trim() || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", houseId);
+
+  if (updateError) {
+    console.error("Error updating house:", updateError);
+    return { error: "Failed to update house" };
+  }
+
+  revalidatePath("/dashboard");
+  return { success: true };
 }
 
 export async function updateMemberRole(

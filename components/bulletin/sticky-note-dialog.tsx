@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { useState, useRef, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { createBulletinItem, updateBulletinItem } from "@/lib/actions/bulletin";
@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { MarkdownToolbar } from "./markdown-toolbar";
 
 const categories: { value: BulletinCategory | "none"; label: string }[] = [
   { value: "none", label: "No Category" },
@@ -61,6 +62,7 @@ export function StickyNoteDialog({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isEditing = !!editItem;
 
@@ -175,18 +177,23 @@ export function StickyNoteDialog({
 
           {/* Content */}
           <div className="grid gap-2">
-            <Label htmlFor="content">Content</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="content">Content</Label>
+              <MarkdownToolbar
+                textareaRef={textareaRef}
+                value={content}
+                onChange={setContent}
+              />
+            </div>
             <textarea
+              ref={textareaRef}
               id="content"
               className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Enter the details... (supports **bold**, *italic*, and - lists)"
+              placeholder="Enter the details..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               maxLength={1000}
             />
-            <p className="text-xs text-muted-foreground">
-              Supports markdown: **bold**, *italic*, - bullet lists
-            </p>
           </div>
 
           {/* Color Picker */}

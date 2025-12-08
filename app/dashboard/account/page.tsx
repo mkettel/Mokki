@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { getActiveHouse } from "@/lib/actions/house";
+import { getResorts } from "@/lib/actions/resorts";
 import { getUserGuestFeesSummary, getUserStaysWithGuestFees } from "@/lib/actions/guest-fees";
 import { GuestFeeSummary } from "@/components/account/guest-fee-summary";
 import { UserStaysHistory } from "@/components/account/user-stays-history";
 import { ProfileSettingsForm } from "@/components/profile-settings-form";
+import { HouseSettingsForm } from "@/components/house-settings-form";
 import {
   Card,
   CardContent,
@@ -12,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { User } from "lucide-react";
+import { User, Home } from "lucide-react";
 
 export default async function AccountPage() {
   const supabase = await createClient();
@@ -36,8 +38,14 @@ export default async function AccountPage() {
     .eq("id", user.id)
     .single();
 
-  const { summary } = await getUserGuestFeesSummary(activeHouse.id);
-  const { stays } = await getUserStaysWithGuestFees(activeHouse.id);
+  const [{ summary }, { stays }, { resorts }] = await Promise.all([
+    getUserGuestFeesSummary(activeHouse.id),
+    getUserStaysWithGuestFees(activeHouse.id),
+    getResorts(),
+  ]);
+
+  // Check if user is admin of the active house
+  const isAdmin = activeHouse.role === "admin";
 
   return (
     <div className="space-y-6">
@@ -64,6 +72,23 @@ export default async function AccountPage() {
           )}
         </CardContent>
       </Card>
+
+      {isAdmin && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Home className="h-5 w-5" />
+              House Settings
+            </CardTitle>
+            <CardDescription>
+              Manage settings for {activeHouse.name}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <HouseSettingsForm house={activeHouse} resorts={resorts} />
+          </CardContent>
+        </Card>
+      )}
 
       <GuestFeeSummary summary={summary} />
 
