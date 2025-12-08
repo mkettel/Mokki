@@ -94,7 +94,7 @@ export function DashboardHomeContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-          className="flex items-center justify-end gap-3 mt-2 text-sm text-muted-foreground"
+          className="flex items-center justify-end gap-3 mt-2 text-sm text-black"
         >
           <LiveClock />
           {weather && (
