@@ -298,6 +298,70 @@ export async function updateBRollCaption(
   return { error: null };
 }
 
+export async function saveBRollMetadata(data: {
+  houseId: string;
+  storagePath: string;
+  publicUrl: string;
+  mediaType: MediaType;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  caption: string | null;
+  width: number | null;
+  height: number | null;
+  duration: number | null;
+}): Promise<{ item: BRollMedia | null; error: string | null }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { item: null, error: "Not authenticated" };
+  }
+
+  // Verify user is a member of this house
+  const { data: membership } = await supabase
+    .from("house_members")
+    .select("id")
+    .eq("house_id", data.houseId)
+    .eq("user_id", user.id)
+    .eq("invite_status", "accepted")
+    .single();
+
+  if (!membership) {
+    return { item: null, error: "You are not a member of this house" };
+  }
+
+  const { data: insertedItem, error: insertError } = await supabase
+    .from("b_roll_media")
+    .insert({
+      house_id: data.houseId,
+      uploaded_by: user.id,
+      media_type: data.mediaType,
+      storage_path: data.storagePath,
+      public_url: data.publicUrl,
+      caption: data.caption?.trim() || null,
+      file_name: data.fileName,
+      file_size: data.fileSize,
+      mime_type: data.mimeType,
+      width: data.width,
+      height: data.height,
+      duration: data.duration,
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Error saving b-roll metadata:", insertError);
+    return { item: null, error: "Failed to save to database" };
+  }
+
+  revalidatePath("/dashboard/b-roll");
+  return { item: insertedItem, error: null };
+}
+
 export async function deleteBRollMedia(
   mediaId: string
 ): Promise<{ error: string | null }> {

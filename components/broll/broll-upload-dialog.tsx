@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback } from "react";
 import { Plus, Upload, X, Loader2, ImageIcon, Film } from "lucide-react";
-import { uploadBRollMedia } from "@/lib/actions/broll";
+import { saveBRollMetadata } from "@/lib/actions/broll";
+import { createClient } from "@/lib/supabase/client";
 import {
   validateMediaFile,
   formatFileSize,
@@ -168,33 +169,91 @@ export function BRollUploadDialog({ houseId, currentUserProfile }: BRollUploadDi
     setIsUploading(true);
     setError(null);
 
-    const formData = new FormData();
-    formData.append("house_id", houseId);
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    for (const f of validFiles) {
-      formData.append("files", f.file);
-      formData.append("captions", f.caption);
-      formData.append("widths", f.width?.toString() || "");
-      formData.append("heights", f.height?.toString() || "");
-      formData.append("durations", f.duration?.toString() || "");
-    }
-
-    const result = await uploadBRollMedia(formData);
-
-    if (result.error && result.items.length === 0) {
-      setError(result.error);
+    if (!user) {
+      setError("Not authenticated");
       setIsUploading(false);
       return;
     }
 
+    const baseTimestamp = Date.now();
+    const uploadErrors: string[] = [];
+
+    // Upload files directly to Supabase Storage from the client
+    const uploadResults = await Promise.allSettled(
+      validFiles.map(async (f, index) => {
+        const sanitizedFileName = f.file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+        const storagePath = `${houseId}/${user.id}/${baseTimestamp}_${index}_${sanitizedFileName}`;
+
+        // Upload directly to Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from("broll")
+          .upload(storagePath, f.file, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(`${f.file.name}: ${uploadError.message}`);
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from("broll").getPublicUrl(storagePath);
+
+        // Save metadata via server action
+        const { item, error: metadataError } = await saveBRollMetadata({
+          houseId,
+          storagePath,
+          publicUrl,
+          mediaType: f.mediaType,
+          fileName: f.file.name,
+          fileSize: f.file.size,
+          mimeType: f.file.type,
+          caption: f.caption || null,
+          width: f.width || null,
+          height: f.height || null,
+          duration: f.duration || null,
+        });
+
+        if (metadataError || !item) {
+          // Clean up uploaded file if metadata save fails
+          await supabase.storage.from("broll").remove([storagePath]);
+          throw new Error(`${f.file.name}: ${metadataError || "Failed to save"}`);
+        }
+
+        return item;
+      })
+    );
+
+    // Collect results and errors
+    const successfulItems = [];
+    for (const result of uploadResults) {
+      if (result.status === "fulfilled") {
+        successfulItems.push(result.value);
+      } else {
+        uploadErrors.push(result.reason?.message || "Unknown upload error");
+      }
+    }
+
     // Add uploaded items to the feed
-    if (result.items.length > 0) {
-      addItems(result.items, currentUserProfile);
+    if (successfulItems.length > 0) {
+      addItems(successfulItems, currentUserProfile);
     }
 
     files.forEach((f) => {
       if (f.preview) URL.revokeObjectURL(f.preview);
     });
+
+    if (uploadErrors.length > 0 && successfulItems.length === 0) {
+      setError(uploadErrors.join("; "));
+      setIsUploading(false);
+      return;
+    }
 
     setFiles([]);
     setOpen(false);
