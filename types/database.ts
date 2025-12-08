@@ -406,6 +406,45 @@ export interface Database {
           }
         ];
       };
+      house_notes: {
+        Row: {
+          id: string;
+          house_id: string;
+          content: string;
+          updated_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          content?: string;
+          updated_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          content?: string;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "house_notes_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: true;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "house_notes_updated_by_fkey";
+            columns: ["updated_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {};
     Functions: {};
@@ -469,6 +508,13 @@ export type BulletinItem = Database["public"]["Tables"]["bulletin_items"]["Row"]
 
 export type BulletinItemWithProfile = BulletinItem & {
   profiles: Profile;
+};
+
+// House note types (shared fridge note)
+export type HouseNote = Database["public"]["Tables"]["house_notes"]["Row"];
+
+export type HouseNoteWithEditor = HouseNote & {
+  profiles: Profile | null;
 };
 
 // Resort types

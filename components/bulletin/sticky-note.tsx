@@ -31,25 +31,25 @@ function seededRandom(seed: string): number {
 }
 
 const noteColors: Record<string, { bg: string; text: string }> = {
-  yellow: {
-    bg: "bg-amber-100 dark:bg-amber-200",
+  blue: {
+    bg: "bg-[#C1AAC0] dark:bg-[#C1AAC0]",
     text: "text-amber-900",
   },
-  blue: {
-    bg: "bg-sky-100 dark:bg-sky-200",
+  beige: {
+    bg: "bg-[#F6F5DF] dark:bg-[#F6F5DF]",
     text: "text-sky-900",
   },
-  green: {
-    bg: "bg-emerald-100 dark:bg-emerald-200",
-    text: "text-emerald-900",
+  granite: {
+    bg: "bg-[#3B5249] dark:bg-[#3B5249]",
+    text: "text-[#F6F5DF]",
   },
-  pink: {
-    bg: "bg-pink-100 dark:bg-pink-200",
-    text: "text-pink-900",
+  brown: {
+    bg: "bg-[#895737] dark:bg-[#895737]",
+    text: "text-[#F6F5DF]",
   },
-  orange: {
-    bg: "bg-orange-100 dark:bg-orange-200",
-    text: "text-orange-900",
+  red: {
+    bg: "bg-[#53131E] dark:bg-[#53131E]",
+    text: "text-[#F6F5DF]",
   },
 };
 
@@ -66,7 +66,7 @@ export function StickyNote({ item, houseId, index }: StickyNoteProps) {
     return (random - 0.5) * 8;
   }, [item.id]);
 
-  const colors = noteColors[item.color] || noteColors.yellow;
+  const colors = noteColors[item.color] || noteColors.beige;
   const category = item.category ? categoryConfig[item.category] : null;
 
   return (

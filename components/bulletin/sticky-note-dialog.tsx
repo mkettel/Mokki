@@ -3,10 +3,7 @@
 import { useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import {
-  createBulletinItem,
-  updateBulletinItem,
-} from "@/lib/actions/bulletin";
+import { createBulletinItem, updateBulletinItem } from "@/lib/actions/bulletin";
 import { BulletinItemWithProfile, BulletinCategory } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,11 +33,11 @@ const categories: { value: BulletinCategory | "none"; label: string }[] = [
 ];
 
 const colors = [
-  { value: "yellow", label: "Yellow", class: "bg-amber-200" },
-  { value: "blue", label: "Blue", class: "bg-sky-200" },
-  { value: "green", label: "Green", class: "bg-emerald-200" },
-  { value: "pink", label: "Pink", class: "bg-pink-200" },
-  { value: "orange", label: "Orange", class: "bg-orange-200" },
+  { value: "blue", label: "Blue", class: "bg-[#C1AAC0]" },
+  { value: "beige", label: "Beige", class: "bg-[#F6F5DF]" },
+  { value: "granite", label: "Granite", class: "bg-[#3B5249]" },
+  { value: "brown", label: "Brown", class: "bg-[#895737]" },
+  { value: "red", label: "Red", class: "bg-[#53131E]" },
 ];
 
 interface StickyNoteDialogProps {
@@ -60,7 +57,7 @@ export function StickyNoteDialog({
   );
   const [title, setTitle] = useState(editItem?.title || "");
   const [content, setContent] = useState(editItem?.content || "");
-  const [color, setColor] = useState(editItem?.color || "yellow");
+  const [color, setColor] = useState(editItem?.color || "beige");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -99,7 +96,7 @@ export function StickyNoteDialog({
         setTitle("");
         setContent("");
         setCategory("none");
-        setColor("yellow");
+        setColor("beige");
       }
       setOpen(false);
       router.refresh();

@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { getActiveHouse } from "@/lib/actions/house";
 import { getBulletinItems } from "@/lib/actions/bulletin";
+import { getHouseNote } from "@/lib/actions/house-note";
 import { PageWrapper } from "@/components/page-wrapper";
 import { BulletinBoardGrid } from "@/components/bulletin/bulletin-board-grid";
 import { StickyNoteDialog } from "@/components/bulletin/sticky-note-dialog";
+import { HouseNote } from "@/components/bulletin/house-note";
 
 export default async function BulletinBoardPage() {
   const supabase = await createClient();
@@ -17,7 +19,10 @@ export default async function BulletinBoardPage() {
     return null;
   }
 
-  const { items } = await getBulletinItems(activeHouse.id);
+  const [{ items }, { note: houseNote }] = await Promise.all([
+    getBulletinItems(activeHouse.id),
+    getHouseNote(activeHouse.id),
+  ]);
 
   return (
     <PageWrapper>
@@ -34,7 +39,18 @@ export default async function BulletinBoardPage() {
           <StickyNoteDialog houseId={activeHouse.id} />
         </div>
 
-        <BulletinBoardGrid items={items} houseId={activeHouse.id} />
+        {/* Two-column layout: House Note on left, Sticky Notes on right */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left: House Note - fixed width on desktop */}
+          <div className="w-full lg:w-96 lg:flex-shrink-0">
+            <HouseNote note={houseNote} houseId={activeHouse.id} />
+          </div>
+
+          {/* Right: Sticky Notes Grid - flexible width */}
+          <div className="flex-1 min-w-0">
+            <BulletinBoardGrid items={items} houseId={activeHouse.id} />
+          </div>
+        </div>
       </div>
     </PageWrapper>
   );
