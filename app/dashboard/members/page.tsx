@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { InviteMemberForm } from "@/components/invite-member-form";
 import { ResendInviteButton } from "@/components/resend-invite-button";
-import { MemberRoleSelect } from "@/components/member-role-select";
+import { YearbookGrid } from "@/components/members/yearbook-grid";
 
 export default async function MembersPage() {
   const supabase = await createClient();
@@ -30,7 +30,7 @@ export default async function MembersPage() {
   const isAdmin = activeHouse.role === "admin";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-2xl text-red uppercase font-bold">Members</h1>
         <p className="text-muted-foreground">
@@ -53,63 +53,20 @@ export default async function MembersPage() {
         </Card>
       )}
 
-      {/* Current Members */}
-      <Card>
+      {/* Yearbook Members Grid */}
+      <Card className="bg-[#f5f0e8]/30 dark:bg-[#2a2520]/30 border-[#d4c9b5] backdrop-blur-0 dark:border-[#3d352c]">
         <CardHeader>
-          <CardTitle>Current Members</CardTitle>
+          <CardTitle className="font-serif text-2xl">
+            {activeHouse.name}
+          </CardTitle>
           <CardDescription>
-            {acceptedMembers.length} member
+            Class of {new Date().getFullYear()} · {acceptedMembers.length}{" "}
+            member
             {acceptedMembers.length !== 1 ? "s" : ""}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {acceptedMembers.map((member) => (
-              <div key={member.id} className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-sm font-medium">
-                      {member.profiles?.display_name?.[0]?.toUpperCase() ||
-                        member.profiles?.email?.[0]?.toUpperCase() ||
-                        "?"}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">
-                        {member.profiles?.display_name || "Unknown"}
-                      </p>
-                      {member.profiles?.rider_type && (
-                        <span className="text-xs text-muted-foreground">
-                          {member.profiles.rider_type === "skier"
-                            ? "Skier"
-                            : member.profiles.rider_type === "snowboarder"
-                            ? "Snowboarder"
-                            : "Skier & Snowboarder"}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {member.profiles?.email}
-                    </p>
-                  </div>
-                </div>
-                {isAdmin ? (
-                  <MemberRoleSelect
-                    memberId={member.id}
-                    currentRole={member.role as "admin" | "member"}
-                    isCurrentUser={member.profiles?.id === user?.id}
-                  />
-                ) : (
-                  <Badge
-                    variant={member.role === "admin" ? "default" : "secondary"}
-                  >
-                    {member.role}
-                  </Badge>
-                )}
-              </div>
-            ))}
-          </div>
+          <YearbookGrid members={acceptedMembers} currentUserId={user?.id} />
         </CardContent>
       </Card>
 

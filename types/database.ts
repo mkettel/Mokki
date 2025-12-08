@@ -38,6 +38,7 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           rider_type: RiderType | null;
+          tagline: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -47,6 +48,7 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           rider_type?: RiderType | null;
+          tagline?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -56,6 +58,7 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           rider_type?: RiderType | null;
+          tagline?: string | null;
           updated_at?: string;
         };
         Relationships: [];
