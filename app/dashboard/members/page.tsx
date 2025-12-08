@@ -84,7 +84,7 @@ export default async function MembersPage() {
               {pendingMembers.map((member) => (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between"
+                  className="flex items-center flex-wrap justify-between"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
