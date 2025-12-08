@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, X, Check } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { HouseNoteWithEditor } from "@/types/database";
 import { updateHouseNote } from "@/lib/actions/house-note";
 import { Button } from "@/components/ui/button";
@@ -129,8 +130,24 @@ Use markdown for formatting:
             </span>
           </button>
         ) : (
-          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-p:whitespace-pre-wrap text-gray-800 leading-7 whitespace-pre-wrap">
-            <ReactMarkdown>{note?.content || ""}</ReactMarkdown>
+          <div className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-p:whitespace-pre-wrap prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 text-gray-800 leading-7 whitespace-pre-wrap break-words overflow-hidden">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ href, children }) => (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all"
+                  >
+                    {children}
+                  </a>
+                ),
+              }}
+            >
+              {note?.content || ""}
+            </ReactMarkdown>
           </div>
         )}
       </div>

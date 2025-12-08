@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Wifi, Shield, Phone, MapPin, Pencil } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { BulletinCategory, BulletinItemWithProfile } from "@/types/database";
 import { StickyNoteDialog } from "./sticky-note-dialog";
 import { DeleteNoteButton } from "./delete-note-button";
@@ -106,8 +107,24 @@ export function StickyNote({ item, houseId, index }: StickyNoteProps) {
       <h3 className="font-semibold mb-2 leading-tight pr-16">{item.title}</h3>
 
       {/* Content with markdown */}
-      <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
-        <ReactMarkdown>{item.content}</ReactMarkdown>
+      <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-a:underline hover:prose-a:opacity-70 break-words overflow-hidden">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            a: ({ href, children }) => (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="break-all"
+              >
+                {children}
+              </a>
+            ),
+          }}
+        >
+          {item.content}
+        </ReactMarkdown>
       </div>
 
       {/* Edit/Delete buttons */}
