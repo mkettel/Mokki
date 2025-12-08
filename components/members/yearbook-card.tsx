@@ -2,8 +2,10 @@
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { RemoveMemberButton } from "./remove-member-button";
 
 interface YearbookCardProps {
+  memberId: string;
   member: {
     id: string;
     display_name: string | null;
@@ -14,6 +16,7 @@ interface YearbookCardProps {
   };
   role: "admin" | "member";
   isCurrentUser?: boolean;
+  canRemove?: boolean;
 }
 
 const riderEmoji: Record<string, string> = {
@@ -29,9 +32,11 @@ const riderLabel: Record<string, string> = {
 };
 
 export function YearbookCard({
+  memberId,
   member,
   role,
   isCurrentUser,
+  canRemove,
 }: YearbookCardProps) {
   const initials = (member.display_name?.[0] || member.email[0]).toUpperCase();
   const name = member.display_name || member.email.split("@")[0];
@@ -43,21 +48,28 @@ export function YearbookCard({
         "shadow-[3px_3px_8px_rgba(0,0,0,0.12),-1px_-1px_4px_rgba(255,255,255,0.4)]",
         "dark:shadow-[3px_3px_8px_rgba(0,0,0,0.4)]",
         "border border-[#d4c9b5] dark:border-[#3d352c]",
-        "transition-transform duration-200"
+        "transition-transform duration-200",
+        "group"
       )}
     >
-      {/* Admin badge */}
-      {role === "admin" && (
-        <div
-          className={cn(
-            "absolute top-2 right-2 z-10",
-            "px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide font-medium",
-            "bg-[#c4a77d] text-[#3d2e1f]"
-          )}
-        >
-          Admin
-        </div>
-      )}
+      {/* Top right corner: Admin badge and/or Remove button */}
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+        {canRemove && (
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <RemoveMemberButton memberId={memberId} memberName={name} />
+          </div>
+        )}
+        {role === "admin" && (
+          <div
+            className={cn(
+              "px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wide font-medium",
+              "bg-[#c4a77d] text-[#3d2e1f]"
+            )}
+          >
+            Admin
+          </div>
+        )}
+      </div>
 
       {/* Photo frame effect */}
       <div className="relative mx-auto w-full h-auto mb-3">

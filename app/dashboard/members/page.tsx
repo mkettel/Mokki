@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { InviteMemberForm } from "@/components/invite-member-form";
 import { ResendInviteButton } from "@/components/resend-invite-button";
+import { CancelInviteButton } from "@/components/members/cancel-invite-button";
 import { YearbookGrid } from "@/components/members/yearbook-grid";
 
 export default async function MembersPage() {
@@ -66,7 +67,7 @@ export default async function MembersPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <YearbookGrid members={acceptedMembers} currentUserId={user?.id} />
+          <YearbookGrid members={acceptedMembers} currentUserId={user?.id} isAdmin={isAdmin} />
         </CardContent>
       </Card>
 
@@ -100,7 +101,12 @@ export default async function MembersPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isAdmin && <ResendInviteButton memberId={member.id} />}
+                    {isAdmin && (
+                      <>
+                        <ResendInviteButton memberId={member.id} />
+                        <CancelInviteButton memberId={member.id} />
+                      </>
+                    )}
                     <Badge variant="outline">Pending</Badge>
                   </div>
                 </div>

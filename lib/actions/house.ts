@@ -444,6 +444,71 @@ export async function updateHouse(houseId: string, formData: FormData) {
   return { success: true };
 }
 
+export async function removeMember(memberId: string) {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  // Get the member record to find the house_id
+  const { data: targetMember } = await supabase
+    .from("house_members")
+    .select("house_id, user_id, role, invite_status")
+    .eq("id", memberId)
+    .single();
+
+  if (!targetMember) {
+    return { error: "Member not found" };
+  }
+
+  // Check if current user is admin of this house
+  const { data: currentMembership } = await supabase
+    .from("house_members")
+    .select("role")
+    .eq("house_id", targetMember.house_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (currentMembership?.role !== "admin") {
+    return { error: "Only admins can remove members" };
+  }
+
+  // Prevent removing yourself (use leave house instead)
+  if (targetMember.user_id === user.id) {
+    return { error: "You cannot remove yourself. Use 'Leave House' instead." };
+  }
+
+  // Prevent removing the last admin
+  if (targetMember.role === "admin" && targetMember.invite_status === "accepted") {
+    const { count } = await supabase
+      .from("house_members")
+      .select("*", { count: "exact", head: true })
+      .eq("house_id", targetMember.house_id)
+      .eq("role", "admin")
+      .eq("invite_status", "accepted");
+
+    if (count && count <= 1) {
+      return { error: "Cannot remove the last admin." };
+    }
+  }
+
+  // Delete the member
+  const { error: deleteError } = await supabase
+    .from("house_members")
+    .delete()
+    .eq("id", memberId);
+
+  if (deleteError) {
+    console.error("Error removing member:", deleteError);
+    return { error: "Failed to remove member" };
+  }
+
+  revalidatePath("/dashboard/members");
+  return { success: true };
+}
+
 export async function updateMemberRole(
   memberId: string,
   newRole: "admin" | "member"
