@@ -12,7 +12,8 @@ interface BRollFeedProps {
 }
 
 export function BRollFeed({ houseId, currentUserId }: BRollFeedProps) {
-  const { items, grouped, hasMore, setHasMore, appendItems } = useBRollContext();
+  const { items, grouped, hasMore, setHasMore, appendItems } =
+    useBRollContext();
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -51,10 +52,8 @@ export function BRollFeed({ houseId, currentUserId }: BRollFeedProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-16">
-        <p className="text-muted-foreground text-lg">
-          No photos or videos yet.
-        </p>
-        <p className="text-muted-foreground text-sm mt-1">
+        <p className="text-black text-lg">No photos or videos yet.</p>
+        <p className="text-black text-sm mt-1">
           Upload your first memories to get started!
         </p>
       </div>
