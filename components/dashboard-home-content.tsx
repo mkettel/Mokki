@@ -13,7 +13,7 @@ interface DashboardHomeContentProps {
 const links = [
   { href: "/dashboard/calendar", label: "Reserve your bed", row: 1 },
   { href: "/dashboard/snow-report", label: "Pow report", row: 1 },
-  { href: "/dashboard/expenses", label: "B-roll", row: 2 },
+  { href: "/dashboard/b-roll", label: "B-roll", row: 2 },
   { href: "/dashboard/bulletin-board", label: "Bulletin board", row: 2 },
   { href: "/dashboard/expenses", label: "Pay up", row: 2 },
   { href: "/dashboard/members", label: "Who's who", row: 3 },
@@ -81,21 +81,26 @@ export function DashboardHomeContent({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
           className="flex items-center justify-end gap-3 mt-2 text-sm text-muted-foreground"
         >
           <LiveClock />
           {weather && (
             <>
               <span>·</span>
-              <span className="flex items-center gap-1.5">
+              <motion.span
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
+                className="flex items-center gap-1.5"
+              >
                 <WeatherIcon
                   code={weather.current.weather_code}
                   isDay={weather.current.is_day}
                   className="h-4 w-4"
                 />
                 {Math.round(weather.current.temperature)}°F
-              </span>
+              </motion.span>
             </>
           )}
         </motion.div>

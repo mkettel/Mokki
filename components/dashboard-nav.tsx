@@ -12,6 +12,7 @@ import {
   User,
   StickyNote,
   Snowflake,
+  Film,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "./logout-button";
@@ -35,6 +36,7 @@ const navItems = [
   { href: "/dashboard/calendar", label: "Calendar", icon: Calendar },
   { href: "/dashboard/snow-report", label: "Snow", icon: Snowflake },
   { href: "/dashboard/bulletin-board", label: "Board", icon: StickyNote },
+  { href: "/dashboard/b-roll", label: "B-Roll", icon: Film },
   { href: "/dashboard/expenses", label: "Expenses", icon: DollarSign },
   // { href: "/dashboard/chat", label: "Chat", icon: MessageCircle },
   { href: "/dashboard/members", label: "Members", icon: Users },

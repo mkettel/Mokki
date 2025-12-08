@@ -20,6 +20,7 @@ export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other" |
 export type MessageType = "text" | "system";
 export type RiderType = "skier" | "snowboarder" | "both";
 export type BulletinCategory = "wifi" | "house_rules" | "emergency" | "local_tips";
+export type MediaType = "image" | "video";
 
 // Webcam configuration for resorts
 export type WebcamConfig = {
@@ -406,6 +407,64 @@ export interface Database {
           }
         ];
       };
+      b_roll_media: {
+        Row: {
+          id: string;
+          house_id: string;
+          uploaded_by: string;
+          media_type: MediaType;
+          storage_path: string;
+          public_url: string;
+          thumbnail_url: string | null;
+          caption: string | null;
+          file_name: string;
+          file_size: number;
+          mime_type: string;
+          width: number | null;
+          height: number | null;
+          duration: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          uploaded_by: string;
+          media_type: MediaType;
+          storage_path: string;
+          public_url: string;
+          thumbnail_url?: string | null;
+          caption?: string | null;
+          file_name: string;
+          file_size: number;
+          mime_type: string;
+          width?: number | null;
+          height?: number | null;
+          duration?: number | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          caption?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "b_roll_media_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "b_roll_media_uploaded_by_fkey";
+            columns: ["uploaded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
       house_notes: {
         Row: {
           id: string;
@@ -455,6 +514,7 @@ export interface Database {
       message_type: MessageType;
       rider_type: RiderType;
       bulletin_category: BulletinCategory;
+      media_type: MediaType;
     };
     CompositeTypes: {};
   };
@@ -515,6 +575,19 @@ export type HouseNote = Database["public"]["Tables"]["house_notes"]["Row"];
 
 export type HouseNoteWithEditor = HouseNote & {
   profiles: Profile | null;
+};
+
+// B-Roll media types
+export type BRollMedia = Database["public"]["Tables"]["b_roll_media"]["Row"];
+
+export type BRollMediaWithProfile = BRollMedia & {
+  profiles: Profile;
+};
+
+export type BRollMediaGroupedByDay = {
+  date: string;
+  displayDate: string;
+  items: BRollMediaWithProfile[];
 };
 
 // Resort types
