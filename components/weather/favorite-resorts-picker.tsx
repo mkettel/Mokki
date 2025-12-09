@@ -176,6 +176,7 @@ export function FavoriteResortsPicker({
         open={resortFormOpen}
         onOpenChange={setResortFormOpen}
         resort={editingResort}
+        existingResorts={resorts}
       />
     </>
   );

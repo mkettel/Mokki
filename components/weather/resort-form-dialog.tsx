@@ -30,12 +30,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, Trash2, AlertCircle } from "lucide-react";
 import { WebcamConfigForm } from "./webcam-config-form";
+import { MapLocationPicker } from "./map-location-picker";
 
 interface ResortFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resort?: Resort | null;
   onSuccess?: () => void;
+  existingResorts?: Resort[];
 }
 
 export function ResortFormDialog({
@@ -43,6 +45,7 @@ export function ResortFormDialog({
   onOpenChange,
   resort,
   onSuccess,
+  existingResorts = [],
 }: ResortFormDialogProps) {
   const isEditing = !!resort;
   const [isPending, startTransition] = useTransition();
@@ -57,7 +60,7 @@ export function ResortFormDialog({
     elevation_summit: resort?.elevation_summit?.toString() || "",
     timezone: resort?.timezone || "America/Los_Angeles",
     website_url: resort?.website_url || "",
-    webcam_urls: resort?.webcam_urls || [] as WebcamConfig[],
+    webcam_urls: resort?.webcam_urls || ([] as WebcamConfig[]),
   });
 
   // Update form data when resort changes or dialog opens
@@ -168,10 +171,18 @@ export function ResortFormDialog({
     onOpenChange(newOpen);
   };
 
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setFormData({
+      ...formData,
+      latitude: lat.toFixed(6),
+      longitude: lng.toFixed(6),
+    });
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {isEditing ? "Edit Resort" : "Add New Resort"}
@@ -184,77 +195,106 @@ export function ResortFormDialog({
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Resort Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="e.g., Palisades Tahoe"
-                required
-              />
-            </div>
+            <div className="grid grid-cols-1 gap-6">
+              {/* Left column - Map */}
+              <div className="space-y-4">
+                <MapLocationPicker
+                  latitude={
+                    formData.latitude
+                      ? parseFloat(formData.latitude)
+                      : undefined
+                  }
+                  longitude={
+                    formData.longitude
+                      ? parseFloat(formData.longitude)
+                      : undefined
+                  }
+                  existingResorts={existingResorts}
+                  currentResortId={resort?.id}
+                  onLocationSelect={handleLocationSelect}
+                />
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="latitude">Latitude *</Label>
-                <Input
-                  id="latitude"
-                  type="number"
-                  step="any"
-                  value={formData.latitude}
-                  onChange={(e) =>
-                    setFormData({ ...formData, latitude: e.target.value })
-                  }
-                  placeholder="e.g., 39.1969"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="longitude">Longitude *</Label>
-                <Input
-                  id="longitude"
-                  type="number"
-                  step="any"
-                  value={formData.longitude}
-                  onChange={(e) =>
-                    setFormData({ ...formData, longitude: e.target.value })
-                  }
-                  placeholder="e.g., -120.2356"
-                  required
-                />
-              </div>
-            </div>
+              {/* Right column - Form fields */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Resort Name *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="e.g., Palisades Tahoe"
+                    required
+                  />
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="elevation_base">Base Elevation (ft)</Label>
-                <Input
-                  id="elevation_base"
-                  type="number"
-                  value={formData.elevation_base}
-                  onChange={(e) =>
-                    setFormData({ ...formData, elevation_base: e.target.value })
-                  }
-                  placeholder="e.g., 6200"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="elevation_summit">Summit Elevation (ft)</Label>
-                <Input
-                  id="elevation_summit"
-                  type="number"
-                  value={formData.elevation_summit}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      elevation_summit: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., 9050"
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="latitude">Latitude *</Label>
+                    <Input
+                      id="latitude"
+                      type="number"
+                      step="any"
+                      value={formData.latitude}
+                      onChange={(e) =>
+                        setFormData({ ...formData, latitude: e.target.value })
+                      }
+                      placeholder="e.g., 39.1969"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="longitude">Longitude *</Label>
+                    <Input
+                      id="longitude"
+                      type="number"
+                      step="any"
+                      value={formData.longitude}
+                      onChange={(e) =>
+                        setFormData({ ...formData, longitude: e.target.value })
+                      }
+                      placeholder="e.g., -120.2356"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="elevation_base">Base Elevation (ft)</Label>
+                    <Input
+                      id="elevation_base"
+                      type="number"
+                      value={formData.elevation_base}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          elevation_base: e.target.value,
+                        })
+                      }
+                      placeholder="e.g., 6200"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="elevation_summit">
+                      Summit Elevation (ft)
+                    </Label>
+                    <Input
+                      id="elevation_summit"
+                      type="number"
+                      value={formData.elevation_summit}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          elevation_summit: e.target.value,
+                        })
+                      }
+                      placeholder="e.g., 9050"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
