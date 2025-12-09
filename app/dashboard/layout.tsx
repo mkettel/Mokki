@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { getActiveHouse, acceptAllPendingInvites } from "@/lib/actions/house";
 import { DashboardShell } from "@/components/dashboard-shell";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,7 @@ export default async function DashboardLayout({
         <main className="flex-1 container mx-auto px-4 py-6 max-w-6xl relative">
           {children}
         </main>
+        <InstallPrompt />
       </div>
     </DashboardShell>
   );

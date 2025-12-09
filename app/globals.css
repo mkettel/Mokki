@@ -147,3 +147,13 @@
   border-radius: 6px !important;
   font-size: 14px !important;
 }
+
+/* PWA safe area handling for iOS notch and home indicator */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

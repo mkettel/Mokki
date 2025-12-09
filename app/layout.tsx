@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Zain } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -12,6 +12,22 @@ export const metadata: Metadata = {
   title: "Mökki - Ski House Manager",
   description:
     "Manage your ski lease house - track stays, split expenses, and coordinate with your group",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Mökki",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
 };
 
 const zain = Zain({
@@ -33,6 +49,7 @@ export default function RootLayout({
           href="https://api.fontshare.com/v2/css?f[]=telma@1&f[]=chillax@1&f[]=boska@1&display=swap"
           rel="stylesheet"
         />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className={`font-chillax antialiased`}>
         <ThemeProvider
