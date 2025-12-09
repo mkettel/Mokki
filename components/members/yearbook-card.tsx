@@ -3,6 +3,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { RemoveMemberButton } from "./remove-member-button";
+import { RoleToggleButton } from "./role-toggle-button";
 
 interface YearbookCardProps {
   memberId: string;
@@ -17,6 +18,7 @@ interface YearbookCardProps {
   role: "admin" | "member";
   isCurrentUser?: boolean;
   canRemove?: boolean;
+  canChangeRole?: boolean;
 }
 
 const riderEmoji: Record<string, string> = {
@@ -37,6 +39,7 @@ export function YearbookCard({
   role,
   isCurrentUser,
   canRemove,
+  canChangeRole,
 }: YearbookCardProps) {
   const initials = (member.display_name?.[0] || member.email[0]).toUpperCase();
   const name = member.display_name || member.email.split("@")[0];
@@ -52,8 +55,13 @@ export function YearbookCard({
         "group"
       )}
     >
-      {/* Top right corner: Admin badge and/or Remove button */}
+      {/* Top right corner: Admin controls and badge */}
       <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+        {canChangeRole && (
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <RoleToggleButton memberId={memberId} currentRole={role} />
+          </div>
+        )}
         {canRemove && (
           <div className="opacity-0 group-hover:opacity-100 transition-opacity">
             <RemoveMemberButton memberId={memberId} memberName={name} />

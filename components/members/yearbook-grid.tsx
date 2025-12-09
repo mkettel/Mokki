@@ -46,6 +46,7 @@ export function YearbookGrid({ members, currentUserId, isAdmin }: YearbookGridPr
             role={member.role as "admin" | "member"}
             isCurrentUser={isCurrentUser}
             canRemove={isAdmin && !isCurrentUser}
+            canChangeRole={isAdmin && !isCurrentUser}
           />
         );
       })}

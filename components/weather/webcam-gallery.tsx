@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { WebcamConfig } from "@/types/database";
 import { Camera, RefreshCw, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -57,45 +56,43 @@ export function WebcamGallery({
 
   if (validWebcams.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="p-6">
+        <div className="pb-4">
+          <div className="flex items-center gap-2 font-semibold text-lg">
             <Camera className="h-5 w-5" />
             Webcams
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-6">
-            <p className="text-muted-foreground mb-4">
-              No webcams configured for {resortName}
-            </p>
-            {websiteUrl && (
-              <Button variant="outline" asChild>
-                <a
-                  href={websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2"
-                >
-                  View on resort website
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
-            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="text-center py-6">
+          <p className="text-muted-foreground mb-4">
+            No webcams configured for {resortName}
+          </p>
+          {websiteUrl && (
+            <Button variant="outline" asChild>
+              <a
+                href={websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2"
+              >
+                View on resort website
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
+          )}
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="p-6">
+      <div className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <div className="flex items-center gap-2 font-semibold text-lg">
             <Camera className="h-5 w-5" />
             Webcams
-          </CardTitle>
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">
               Updated {lastRefresh.toLocaleTimeString()}
@@ -105,8 +102,8 @@ export function WebcamGallery({
             </Button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         <div className="grid gap-4 md:grid-cols-2">
           {validWebcams.map((webcam, index) => (
             <div key={`${webcam.url}-${refreshKey}-${index}`} className="space-y-2">
@@ -147,7 +144,7 @@ export function WebcamGallery({
             </Button>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

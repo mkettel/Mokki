@@ -55,13 +55,11 @@ export function WeatherGrid({
           disabled={isPending}
           className="gap-2"
         >
-          <RefreshCw
-            className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
           Refresh
         </Button>
       </div>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {reports.map((report) => (
           <div
             key={report.resort.id}

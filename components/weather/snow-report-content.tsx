@@ -48,9 +48,7 @@ export function SnowReportContent({
     }
   }, [reportResortIds, selectedResortId, reports]);
 
-  const selectedReport = reports.find(
-    (r) => r.resort.id === selectedResortId
-  );
+  const selectedReport = reports.find((r) => r.resort.id === selectedResortId);
 
   return (
     <div className="space-y-6">
@@ -80,8 +78,8 @@ export function SnowReportContent({
 
           {/* Selected Resort Details */}
           {selectedReport && (
-            <div className="space-y-6 pt-4 border-t">
-              <div className="flex items-center justify-between">
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <Mountain className="h-5 w-5" />
                   {selectedReport.resort.name}
@@ -97,21 +95,31 @@ export function SnowReportContent({
                 </Button>
               </div>
 
-              <CurrentConditionsCard
-                weather={selectedReport.weather}
-                resortName={selectedReport.resort.name}
-                elevation={selectedReport.resort.elevation_summit}
-              />
+              <Card>
+                <CardContent className="p-0">
+                  <CurrentConditionsCard
+                    weather={selectedReport.weather}
+                    resortName={selectedReport.resort.name}
+                    elevation={selectedReport.resort.elevation_summit}
+                  />
 
-              <HourlyForecastCard weather={selectedReport.weather} />
+                  <div className="border-t" />
 
-              <SnowForecastCard weather={selectedReport.weather} />
+                  <HourlyForecastCard weather={selectedReport.weather} />
 
-              <WebcamGallery
-                webcams={selectedReport.resort.webcam_urls}
-                resortName={selectedReport.resort.name}
-                websiteUrl={selectedReport.resort.website_url}
-              />
+                  <div className="border-t" />
+
+                  <SnowForecastCard weather={selectedReport.weather} />
+
+                  <div className="border-t" />
+
+                  <WebcamGallery
+                    webcams={selectedReport.resort.webcam_urls}
+                    resortName={selectedReport.resort.name}
+                    websiteUrl={selectedReport.resort.website_url}
+                  />
+                </CardContent>
+              </Card>
             </div>
           )}
         </>

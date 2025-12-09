@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OpenMeteoWeatherData } from "@/types/database";
 import { WeatherIcon } from "./weather-icon";
 import { Snowflake } from "lucide-react";
@@ -33,9 +32,9 @@ export function SnowForecastCard({ weather }: SnowForecastCardProps) {
   const maxSnow = Math.max(...daily.snowfall_sum, 1);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+    <div className="p-6">
+      <div className="pb-4">
+        <div className="flex items-center justify-between font-semibold text-lg">
           <div className="flex items-center gap-2">
             <Snowflake className="h-5 w-5 text-blue-400" />
             <span>7-Day Snow Forecast</span>
@@ -45,9 +44,9 @@ export function SnowForecastCard({ weather }: SnowForecastCardProps) {
           >
             {totalSnow.toFixed(1)}" total
           </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </div>
+      </div>
+      <div>
         <div className="grid grid-cols-7 gap-2">
           {daily.time.map((date, index) => (
             <div
@@ -110,7 +109,7 @@ export function SnowForecastCard({ weather }: SnowForecastCardProps) {
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

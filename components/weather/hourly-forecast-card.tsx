@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OpenMeteoWeatherData } from "@/types/database";
 import { WeatherIcon } from "./weather-icon";
 import { Clock, Droplets, Snowflake } from "lucide-react";
@@ -55,20 +54,20 @@ export function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
   const hasSnowComing = snowHours.length > 0;
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2">
+    <div className="p-6">
+      <div className="pb-4">
+        <div className="flex items-center gap-2 font-semibold text-lg">
           <Clock className="h-5 w-5" />
           24-Hour Forecast
-        </CardTitle>
+        </div>
         {hasSnowComing && (
           <p className="text-sm text-blue-500 flex items-center gap-1">
             <Snowflake className="h-4 w-4" />
             Snow expected in the next 24 hours
           </p>
         )}
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         <div className="overflow-x-auto -mx-6 px-6">
           <div className="flex gap-3 py-2" style={{ minWidth: "max-content" }}>
             {hourlyData.map((hour, i) => {
@@ -127,7 +126,7 @@ export function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
         </div>
 
         {/* Summary row */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t text-sm text-muted-foreground">
+        <div className="flex items-center justify-between mt-0 pt-4 text-sm text-muted-foreground">
           <div>
             High:{" "}
             <span className="font-medium text-foreground">
@@ -149,7 +148,7 @@ export function HourlyForecastCard({ weather }: HourlyForecastCardProps) {
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
