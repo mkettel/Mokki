@@ -54,7 +54,7 @@ export function GuestFeeSummary({ summary }: GuestFeeSummaryProps) {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <h2 className="text-lg font-semibold">Guest Fees Summary</h2>
       <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
