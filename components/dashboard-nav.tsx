@@ -87,7 +87,7 @@ export function DashboardNav({ house, houses }: DashboardNavProps) {
 
         {/* Navigation - hidden on homepage */}
         {!isHomepage && (
-          <nav className="flex items-center gap-1 overflow-x-auto pb-2 px-4">
+          <nav className="flex items-center gap-1 overflow-x-auto pb-2 px-1">
             {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive =

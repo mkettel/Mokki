@@ -1,0 +1,367 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Plus, CalendarIcon, Upload, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { createExpense, uploadReceipt } from "@/lib/actions/expenses";
+import { MemberSplitSelector } from "./member-split-selector";
+import type { Profile, ExpenseCategory } from "@/types/database";
+
+interface AddExpenseDialogProps {
+  houseId: string;
+  members: (Profile & { memberId: string })[];
+  currentUserId: string;
+}
+
+const categories: { value: ExpenseCategory; label: string }[] = [
+  { value: "groceries", label: "Groceries" },
+  { value: "utilities", label: "Utilities" },
+  { value: "supplies", label: "Supplies" },
+  { value: "rent", label: "Rent" },
+  { value: "entertainment", label: "Entertainment" },
+  { value: "transportation", label: "Transportation" },
+  { value: "other", label: "Other" },
+];
+
+export function AddExpenseDialog({
+  houseId,
+  members,
+  currentUserId,
+}: AddExpenseDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Form state
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState<ExpenseCategory>("other");
+  const [date, setDate] = useState<Date>(new Date());
+  const [description, setDescription] = useState("");
+  const [splits, setSplits] = useState<{ userId: string; amount: number }[]>([]);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+
+  const router = useRouter();
+
+  const resetForm = () => {
+    setTitle("");
+    setAmount("");
+    setCategory("other");
+    setDate(new Date());
+    setDescription("");
+    setSplits([]);
+    setReceiptFile(null);
+    setError(null);
+  };
+
+  const handleSplitsChange = useCallback(
+    (newSplits: { userId: string; amount: number }[]) => {
+      setSplits(newSplits);
+    },
+    []
+  );
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+      if (!allowedTypes.includes(file.type)) {
+        setError("File must be an image (JPEG, PNG, WebP) or PDF");
+        return;
+      }
+      // Validate file size (10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("File too large (max 10MB)");
+        return;
+      }
+      setReceiptFile(file);
+      setError(null);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      // Validate
+      if (!title.trim()) {
+        setError("Title is required");
+        return;
+      }
+
+      const amountNum = parseFloat(amount);
+      if (isNaN(amountNum) || amountNum <= 0) {
+        setError("Please enter a valid amount");
+        return;
+      }
+
+      if (splits.length === 0) {
+        setError("Please select at least one person to split with");
+        return;
+      }
+
+      // Check splits sum
+      const splitTotal = splits.reduce((sum, s) => sum + s.amount, 0);
+      if (Math.abs(splitTotal - amountNum) > 0.01) {
+        setError(`Split amounts ($${splitTotal.toFixed(2)}) must equal total ($${amountNum.toFixed(2)})`);
+        return;
+      }
+
+      // Create expense
+      const formData = new FormData();
+      formData.append("house_id", houseId);
+      formData.append("title", title.trim());
+      formData.append("amount", amountNum.toFixed(2));
+      formData.append("category", category);
+      formData.append("date", format(date, "yyyy-MM-dd"));
+      formData.append("description", description.trim());
+      formData.append("splits", JSON.stringify(splits));
+
+      const result = await createExpense(formData);
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      // Upload receipt if provided
+      if (receiptFile && result.expense) {
+        const receiptFormData = new FormData();
+        receiptFormData.append("receipt", receiptFile);
+        const receiptResult = await uploadReceipt(result.expense.id, receiptFormData);
+        if (receiptResult.error) {
+          console.error("Receipt upload failed:", receiptResult.error);
+          // Don't fail the whole operation, expense was created successfully
+        }
+      }
+
+      resetForm();
+      setOpen(false);
+      router.refresh();
+    } catch (err) {
+      console.error("Error creating expense:", err);
+      setError("Failed to create expense. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const parsedAmount = parseFloat(amount) || 0;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Expense
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Expense</DialogTitle>
+          <DialogDescription>
+            Add an expense and split it with house members.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          {/* Title */}
+          <div className="space-y-2">
+            <Label htmlFor="title">Title *</Label>
+            <Input
+              id="title"
+              placeholder="What was this expense for?"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Amount and Category */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="amount">Amount *</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  $
+                </span>
+                <Input
+                  id="amount"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "" || /^\d*\.?\d{0,2}$/.test(val)) {
+                      setAmount(val);
+                    }
+                  }}
+                  disabled={isLoading}
+                  className="pl-7"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Select
+                value={category}
+                onValueChange={(v) => setCategory(v as ExpenseCategory)}
+                disabled={isLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Date */}
+          <div className="space-y-2">
+            <Label>Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                  disabled={isLoading}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : "Pick a date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(d) => d && setDate(d)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description">Description (optional)</Label>
+            <Textarea
+              id="description"
+              placeholder="Add any notes or details..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={isLoading}
+              rows={2}
+            />
+          </div>
+
+          {/* Receipt Upload */}
+          <div className="space-y-2">
+            <Label>Receipt (optional)</Label>
+            {receiptFile ? (
+              <div className="flex items-center gap-2 p-2 border rounded-lg">
+                <span className="flex-1 text-sm truncate">{receiptFile.name}</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setReceiptFile(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="relative">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,application/pdf"
+                  onChange={handleFileChange}
+                  disabled={isLoading}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Receipt
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Split selector */}
+          <div className="space-y-2">
+            <Label>Split With</Label>
+            <MemberSplitSelector
+              members={members}
+              currentUserId={currentUserId}
+              totalAmount={parsedAmount}
+              onChange={handleSplitsChange}
+            />
+          </div>
+
+          {/* Error */}
+          {error && <p className="text-sm text-red-500">{error}</p>}
+
+          {/* Actions */}
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={isLoading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Creating..." : "Create Expense"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

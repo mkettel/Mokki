@@ -35,7 +35,7 @@ export default async function AccountPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("email, display_name, rider_type, avatar_url, tagline")
+    .select("email, display_name, rider_type, avatar_url, tagline, venmo_handle")
     .eq("id", user.id)
     .single();
 

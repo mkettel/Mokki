@@ -16,7 +16,15 @@ export type HouseSettings = {
 
 export type MemberRole = "admin" | "member";
 export type InviteStatus = "pending" | "accepted";
-export type ExpenseCategory = "groceries" | "utilities" | "supplies" | "other" | "guest_fees";
+export type ExpenseCategory =
+  | "groceries"
+  | "utilities"
+  | "supplies"
+  | "other"
+  | "guest_fees"
+  | "rent"
+  | "entertainment"
+  | "transportation";
 export type MessageType = "text" | "system";
 export type RiderType = "skier" | "snowboarder" | "both";
 export type BulletinCategory = "wifi" | "house_rules" | "emergency" | "local_tips";
@@ -41,6 +49,7 @@ export interface Database {
           avatar_url: string | null;
           rider_type: RiderType | null;
           tagline: string | null;
+          venmo_handle: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -51,6 +60,7 @@ export interface Database {
           avatar_url?: string | null;
           rider_type?: RiderType | null;
           tagline?: string | null;
+          venmo_handle?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -61,6 +71,7 @@ export interface Database {
           avatar_url?: string | null;
           rider_type?: RiderType | null;
           tagline?: string | null;
+          venmo_handle?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -243,6 +254,8 @@ export interface Database {
           id: string;
           house_id: string;
           paid_by: string;
+          created_by: string | null;
+          title: string | null;
           amount: number;
           description: string;
           category: ExpenseCategory;
@@ -254,6 +267,8 @@ export interface Database {
           id?: string;
           house_id: string;
           paid_by: string;
+          created_by: string;
+          title?: string | null;
           amount: number;
           description: string;
           category?: ExpenseCategory;
@@ -262,6 +277,7 @@ export interface Database {
           created_at?: string;
         };
         Update: {
+          title?: string | null;
           amount?: number;
           description?: string;
           category?: ExpenseCategory;
@@ -279,6 +295,13 @@ export interface Database {
           {
             foreignKeyName: "expenses_paid_by_fkey";
             columns: ["paid_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "expenses_created_by_fkey";
+            columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -654,4 +677,34 @@ export type WeatherReport = {
   resort: Resort;
   weather: OpenMeteoWeatherData;
   fetchedAt: string;
+};
+
+// Expense system types
+export type ExpenseWithDetails = Expense & {
+  paid_by_profile: Profile;
+  created_by_profile: Profile | null;
+  expense_splits: (ExpenseSplit & {
+    profiles: Profile;
+  })[];
+};
+
+export type UserBalance = {
+  userId: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  venmoHandle: string | null;
+  owes: number; // they owe current user
+  owed: number; // current user owes them
+  netBalance: number; // positive = they owe you, negative = you owe them
+};
+
+export type ExpenseSummary = {
+  totalYouOwe: number;
+  totalYouAreOwed: number;
+  netBalance: number;
+};
+
+export type ExpenseBalanceData = {
+  balances: UserBalance[];
+  summary: ExpenseSummary;
 };

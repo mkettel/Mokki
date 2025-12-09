@@ -7,7 +7,8 @@ import { RiderType } from "@/types/database";
 export async function updateProfile(
   displayName: string,
   riderType?: RiderType | null,
-  tagline?: string | null
+  tagline?: string | null,
+  venmoHandle?: string | null
 ) {
   const supabase = await createClient();
   const {
@@ -27,10 +28,22 @@ export async function updateProfile(
     return { error: "Tagline must be 100 characters or less" };
   }
 
+  // Validate Venmo handle: alphanumeric, hyphens, underscores, 5-30 chars
+  if (venmoHandle && venmoHandle.trim().length > 0) {
+    const trimmedHandle = venmoHandle.trim();
+    if (trimmedHandle.length < 5 || trimmedHandle.length > 30) {
+      return { error: "Venmo handle must be 5-30 characters" };
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(trimmedHandle)) {
+      return { error: "Venmo handle can only contain letters, numbers, hyphens, and underscores" };
+    }
+  }
+
   const updateData: {
     display_name: string | null;
     rider_type?: RiderType | null;
     tagline?: string | null;
+    venmo_handle?: string | null;
   } = {
     display_name: displayName.trim() || null,
   };
@@ -41,6 +54,10 @@ export async function updateProfile(
 
   if (tagline !== undefined) {
     updateData.tagline = tagline?.trim() || null;
+  }
+
+  if (venmoHandle !== undefined) {
+    updateData.venmo_handle = venmoHandle?.trim() || null;
   }
 
   const { error } = await supabase
@@ -55,6 +72,7 @@ export async function updateProfile(
 
   revalidatePath("/dashboard/account");
   revalidatePath("/dashboard/members");
+  revalidatePath("/dashboard/expenses");
   revalidatePath("/dashboard");
   return { success: true };
 }

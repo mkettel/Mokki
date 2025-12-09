@@ -16,6 +16,7 @@ interface ProfileSettingsFormProps {
     rider_type: RiderType | null;
     avatar_url: string | null;
     tagline: string | null;
+    venmo_handle: string | null;
   };
 }
 
@@ -31,6 +32,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
     profile.rider_type
   );
   const [tagline, setTagline] = useState(profile.tagline || "");
+  const [venmoHandle, setVenmoHandle] = useState(profile.venmo_handle || "");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,7 +45,7 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
     setSuccess(null);
 
     try {
-      const result = await updateProfile(displayName, riderType, tagline);
+      const result = await updateProfile(displayName, riderType, tagline, venmoHandle);
 
       if (result.error) {
         setError(result.error);
@@ -115,6 +117,26 @@ export function ProfileSettingsForm({ profile }: ProfileSettingsFormProps) {
           />
           <p className="text-xs text-muted-foreground">
             A short quote or tagline for your yearbook profile (optional)
+          </p>
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="venmo_handle">Venmo Username</Label>
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">@</span>
+            <Input
+              id="venmo_handle"
+              type="text"
+              placeholder="your-venmo-username"
+              value={venmoHandle}
+              onChange={(e) => setVenmoHandle(e.target.value)}
+              maxLength={30}
+              disabled={isLoading}
+              className="flex-1"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Your Venmo username for expense settlements (optional). This will be visible to house members.
           </p>
         </div>
 

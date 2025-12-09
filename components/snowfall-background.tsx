@@ -114,7 +114,7 @@ export function SnowfallBackground() {
     container.appendChild(renderer.domElement);
 
     // Particle configuration
-    const particleCount = 12000;
+    const particleCount = 1900;
     const spreadX = frustumSize * aspect * 1.5;
     const spreadY = frustumSize * 1.5;
     const spreadZ = 400;
