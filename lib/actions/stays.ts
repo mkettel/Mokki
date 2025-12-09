@@ -173,6 +173,7 @@ export async function createStay(formData: FormData) {
         .insert({
           house_id: houseId,
           paid_by: adminId,
+          created_by: adminId,
           amount: totalFee,
           description: `Guest fees: ${guestCount} guest(s) × ${nights} night(s)`,
           category: "guest_fees",
