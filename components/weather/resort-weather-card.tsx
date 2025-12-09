@@ -12,7 +12,10 @@ interface ResortWeatherCardProps {
   compact?: boolean;
 }
 
-export function ResortWeatherCard({ report, compact = false }: ResortWeatherCardProps) {
+export function ResortWeatherCard({
+  report,
+  compact = false,
+}: ResortWeatherCardProps) {
   const { resort, weather } = report;
   const current = weather.current;
   const snowfallData = weather.daily?.snowfall_sum ?? [];
@@ -43,20 +46,22 @@ export function ResortWeatherCard({ report, compact = false }: ResortWeatherCard
 
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-2xl font-bold">{Math.round(current.temperature)}°</p>
+              <p className="text-2xl font-bold">
+                {Math.round(current.temperature)}°
+              </p>
               <p className="text-xs text-muted-foreground">Now</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-blue-400">
                 {snow3Day > 0 ? `${snow3Day.toFixed(0)}"` : "—"}
               </p>
-              <p className="text-xs text-muted-foreground">3-Day</p>
+              <p className="text-xs text-muted-foreground">3-Day Total</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-blue-500">
                 {snow7Day > 0 ? `${snow7Day.toFixed(0)}"` : "—"}
               </p>
-              <p className="text-xs text-muted-foreground">7-Day</p>
+              <p className="text-xs text-muted-foreground">7-Day Total</p>
             </div>
           </div>
 
@@ -111,7 +116,9 @@ export function ResortWeatherCard({ report, compact = false }: ResortWeatherCard
         {/* Current temp and snow forecast */}
         <div className="grid grid-cols-4 gap-3 text-center mb-4">
           <div>
-            <p className="text-3xl font-bold">{Math.round(current.temperature)}°</p>
+            <p className="text-3xl font-bold">
+              {Math.round(current.temperature)}°
+            </p>
             <p className="text-xs text-muted-foreground">
               Feels {Math.round(current.apparent_temperature)}°
             </p>
@@ -119,7 +126,9 @@ export function ResortWeatherCard({ report, compact = false }: ResortWeatherCard
           <div>
             <p className="text-2xl font-bold">
               {current.snowfall > 0 ? (
-                <span className="text-blue-400">{current.snowfall.toFixed(1)}"</span>
+                <span className="text-blue-400">
+                  {current.snowfall.toFixed(1)}"
+                </span>
               ) : (
                 "—"
               )}
@@ -149,21 +158,22 @@ export function ResortWeatherCard({ report, compact = false }: ResortWeatherCard
               try {
                 const parsed = new Date(date + "T12:00:00");
                 if (isNaN(parsed.getTime())) return "?";
-                return parsed.toLocaleDateString("en-US", { weekday: "narrow" });
+                return parsed.toLocaleDateString("en-US", {
+                  weekday: "narrow",
+                });
               } catch {
                 return "?";
               }
             })();
             return (
-              <div
-                key={date}
-                className="flex-1 flex flex-col items-center"
-              >
+              <div key={date} className="flex-1 flex flex-col items-center">
                 <div className="h-8 w-full flex items-end justify-center">
                   {daySnow > 0 ? (
                     <div
                       className="bg-blue-400 w-full max-w-[20px] rounded-t"
-                      style={{ height: `${Math.max(4, (daySnow / maxSnow) * 100)}%` }}
+                      style={{
+                        height: `${Math.max(4, (daySnow / maxSnow) * 100)}%`,
+                      }}
                     />
                   ) : (
                     <div className="h-1 w-2 bg-muted rounded" />
@@ -183,7 +193,9 @@ export function ResortWeatherCard({ report, compact = false }: ResortWeatherCard
             <Wind className="h-3.5 w-3.5" />
             <span>{Math.round(current.wind_speed)} mph</span>
             {current.wind_gusts > current.wind_speed + 10 && (
-              <span className="text-xs">(gusts {Math.round(current.wind_gusts)})</span>
+              <span className="text-xs">
+                (gusts {Math.round(current.wind_gusts)})
+              </span>
             )}
           </div>
           {resort.elevation_summit && (

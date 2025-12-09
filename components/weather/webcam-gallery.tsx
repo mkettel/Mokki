@@ -105,7 +105,7 @@ export function WebcamGallery({
         </div>
       </div>
       <div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4">
           {validWebcams.map((webcam, index) => (
             <div
               key={`${webcam.url}-${refreshKey}-${index}`}

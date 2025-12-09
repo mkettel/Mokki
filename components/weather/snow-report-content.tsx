@@ -74,6 +74,7 @@ export function SnowReportContent({
             reports={reports}
             onResortClick={setSelectedResortId}
             selectedResortId={selectedResortId}
+            houseId={houseId}
           />
 
           {/* Selected Resort Details */}
