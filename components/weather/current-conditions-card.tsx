@@ -63,7 +63,7 @@ export function CurrentConditionsCard({
           {elevation && (
             <span className="text-sm font-normal text-muted-foreground flex items-center gap-1">
               <Mountain className="h-4 w-4" />
-              {elevation.toLocaleString()}'
+              {elevation.toLocaleString()}&apos;
             </span>
           )}
         </div>

@@ -18,11 +18,13 @@ interface Member {
   id: string;
   invite_status: string;
   invited_email: string | null;
-  profile?: {
+  joined_at: string | null;
+  profiles: {
     id: string;
+    email: string;
     display_name: string | null;
     avatar_url: string | null;
-    rider_type: string | null;
+    rider_type: "skier" | "snowboarder" | "both" | null;
     tagline: string | null;
   } | null;
   role: string;
