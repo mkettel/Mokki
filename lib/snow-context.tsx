@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from "react";
+import { isPrecipitationWeather } from "@/lib/weather-utils";
 
 interface SnowContextType {
   enabled: boolean;
@@ -12,9 +13,15 @@ const SnowContext = createContext<SnowContextType | undefined>(undefined);
 
 const STORAGE_KEY = "mokki-snow-enabled";
 
-export function SnowProvider({ children }: { children: ReactNode }) {
+interface SnowProviderProps {
+  children: ReactNode;
+  weatherCode?: number | null;
+}
+
+export function SnowProvider({ children, weatherCode }: SnowProviderProps) {
   const [enabled, setEnabledState] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const hasCheckedWeather = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -23,6 +30,22 @@ export function SnowProvider({ children }: { children: ReactNode }) {
       setEnabledState(stored === "true");
     }
   }, []);
+
+  // Auto-enable snow when weather indicates precipitation
+  useEffect(() => {
+    if (!mounted || hasCheckedWeather.current) return;
+    hasCheckedWeather.current = true;
+
+    // If weather is precipitating and snow is currently off, turn it on
+    if (weatherCode !== undefined && weatherCode !== null && isPrecipitationWeather(weatherCode)) {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      // Only auto-enable if not already enabled (don't override user preference if already on)
+      if (stored !== "true") {
+        setEnabledState(true);
+        localStorage.setItem(STORAGE_KEY, "true");
+      }
+    }
+  }, [mounted, weatherCode]);
 
   const setEnabled = (value: boolean) => {
     setEnabledState(value);

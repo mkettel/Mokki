@@ -38,3 +38,35 @@ export function getWeatherDescription(code: number): string {
 export function isSnowWeather(code: number): boolean {
   return [71, 73, 75, 77, 85, 86].includes(code);
 }
+
+// Check if weather code indicates rain or snow (precipitation)
+export function isPrecipitationWeather(code: number): boolean {
+  // Rain codes: 51-67, 80-82, 95-99
+  // Snow codes: 71, 73, 75, 77, 85, 86
+  const precipitationCodes = [
+    51,
+    53,
+    55,
+    56,
+    57,
+    45, // drizzle
+    61,
+    63,
+    65,
+    66,
+    67, // rain
+    71,
+    73,
+    75,
+    77, // snow
+    80,
+    81,
+    82, // rain showers
+    85,
+    86, // snow showers
+    95,
+    96,
+    99, // thunderstorms
+  ];
+  return precipitationCodes.includes(code);
+}

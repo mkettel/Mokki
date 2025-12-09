@@ -6,11 +6,12 @@ import { SnowfallBackground } from "@/components/snowfall-background";
 
 interface DashboardShellProps {
   children: ReactNode;
+  weatherCode?: number | null;
 }
 
-export function DashboardShell({ children }: DashboardShellProps) {
+export function DashboardShell({ children, weatherCode }: DashboardShellProps) {
   return (
-    <SnowProvider>
+    <SnowProvider weatherCode={weatherCode}>
       <SnowfallBackground />
       {children}
     </SnowProvider>

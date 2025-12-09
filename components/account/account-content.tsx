@@ -14,12 +14,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { User, Home } from "lucide-react";
-import type { GuestFeeSummary as GuestFeeSummaryType, StayWithGuestFees, Resort } from "@/types/database";
+import type { UserGuestFeeSummary, Resort, RiderType } from "@/types/database";
 
 interface Profile {
-  email: string | null;
+  email: string;
   display_name: string | null;
-  rider_type: string | null;
+  rider_type: RiderType | null;
   avatar_url: string | null;
   tagline: string | null;
   venmo_handle: string | null;
@@ -29,14 +29,40 @@ interface House {
   id: string;
   name: string;
   role: string;
+  address: string | null;
+  resort_id: string | null;
+}
+
+// Stay type matching what UserStaysHistory expects
+interface Stay {
+  id: string;
+  check_in: string;
+  check_out: string;
+  notes: string | null;
+  guest_count: number;
+  houses: {
+    id: string;
+    name: string;
+  } | null;
+  expenses: {
+    id: string;
+    amount: number;
+    expense_splits: {
+      id: string;
+      user_id: string;
+      amount: number;
+      settled: boolean;
+      settled_at: string | null;
+    }[];
+  } | null;
 }
 
 interface AccountContentProps {
   profile: Profile | null;
   house: House;
   resorts: Resort[];
-  summary: GuestFeeSummaryType | null;
-  stays: StayWithGuestFees[];
+  summary: UserGuestFeeSummary | null;
+  stays: Stay[];
   currentUserId: string;
   isAdmin: boolean;
 }

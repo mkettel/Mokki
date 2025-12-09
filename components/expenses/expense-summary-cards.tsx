@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { ArrowDownLeft, ArrowUpRight, Scale } from "lucide-react";
 import type { ExpenseSummary } from "@/types/database";
 

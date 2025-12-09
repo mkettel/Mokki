@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardNav } from "@/components/dashboard-nav";
 import { getActiveHouse, acceptAllPendingInvites } from "@/lib/actions/house";
+import { getHouseWeatherReport } from "@/lib/actions/weather";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
@@ -31,8 +32,12 @@ export default async function DashboardLayout({
     redirect("/create-house");
   }
 
+  // Fetch weather for auto-snow feature
+  const { report: weatherReport } = await getHouseWeatherReport(activeHouse.id);
+  const weatherCode = weatherReport?.weather?.current?.weather_code ?? null;
+
   return (
-    <DashboardShell>
+    <DashboardShell weatherCode={weatherCode}>
       <div className="min-h-screen flex flex-col">
         <div className="geometric-bg" aria-hidden="true" />
         <DashboardNav house={activeHouse} houses={houses} />
