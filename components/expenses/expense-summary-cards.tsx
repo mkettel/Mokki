@@ -23,7 +23,7 @@ export function ExpenseSummaryCards({ summary }: ExpenseSummaryCardsProps) {
           <ArrowUpRight className="h-5 w-5 text-red-600 dark:text-red-400" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">You Owe</p>
+          <p className="text-sm text-back">You Owe</p>
           <p className="text-2xl font-bold text-red-600 dark:text-red-400">
             {formatCurrency(summary.totalYouOwe)}
           </p>
@@ -35,7 +35,7 @@ export function ExpenseSummaryCards({ summary }: ExpenseSummaryCardsProps) {
           <ArrowDownLeft className="h-5 w-5 text-green-600 dark:text-green-400" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">You&apos;re Owed</p>
+          <p className="text-sm text-back">You&apos;re Owed</p>
           <p className="text-2xl font-bold text-green-600 dark:text-green-400">
             {formatCurrency(summary.totalYouAreOwed)}
           </p>
@@ -47,7 +47,7 @@ export function ExpenseSummaryCards({ summary }: ExpenseSummaryCardsProps) {
           <Scale className="h-5 w-5 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <p className="text-sm text-muted-foreground">Net Balance</p>
+          <p className="text-sm text-back">Net Balance</p>
           <p
             className={`text-2xl font-bold ${
               summary.netBalance >= 0
