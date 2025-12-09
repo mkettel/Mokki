@@ -12,7 +12,8 @@ function isValidWebcamUrl(url: string): boolean {
     // Only allow https URLs
     if (parsed.protocol !== "https:") return false;
     // Block dangerous protocols
-    if (["javascript:", "data:", "vbscript:"].includes(parsed.protocol)) return false;
+    if (["javascript:", "data:", "vbscript:"].includes(parsed.protocol))
+      return false;
     return true;
   } catch {
     return false;
@@ -106,8 +107,13 @@ export function WebcamGallery({
       <div>
         <div className="grid gap-4 md:grid-cols-2">
           {validWebcams.map((webcam, index) => (
-            <div key={`${webcam.url}-${refreshKey}-${index}`} className="space-y-2">
-              <p className="text-sm font-medium">{webcam.name || `Webcam ${index + 1}`}</p>
+            <div
+              key={`${webcam.url}-${refreshKey}-${index}`}
+              className="space-y-2"
+            >
+              <p className="text-sm font-medium">
+                {webcam.name || `Webcam ${index + 1}`}
+              </p>
               {webcam.type === "image" ? (
                 <img
                   src={`${webcam.url}?t=${refreshKey}`}
@@ -116,7 +122,7 @@ export function WebcamGallery({
                   loading="lazy"
                 />
               ) : (
-                <div className="aspect-video">
+                <div className="aspect-square">
                   <iframe
                     src={webcam.url}
                     className="w-full h-full rounded-md"

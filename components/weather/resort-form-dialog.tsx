@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { Resort, WebcamConfig } from "@/types/database";
 import {
   createResort,
@@ -29,6 +29,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Loader2, Trash2, AlertCircle } from "lucide-react";
+import { WebcamConfigForm } from "./webcam-config-form";
 
 interface ResortFormDialogProps {
   open: boolean;
@@ -56,7 +57,25 @@ export function ResortFormDialog({
     elevation_summit: resort?.elevation_summit?.toString() || "",
     timezone: resort?.timezone || "America/Los_Angeles",
     website_url: resort?.website_url || "",
+    webcam_urls: resort?.webcam_urls || [] as WebcamConfig[],
   });
+
+  // Update form data when resort changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      setFormData({
+        name: resort?.name || "",
+        latitude: resort?.latitude?.toString() || "",
+        longitude: resort?.longitude?.toString() || "",
+        elevation_base: resort?.elevation_base?.toString() || "",
+        elevation_summit: resort?.elevation_summit?.toString() || "",
+        timezone: resort?.timezone || "America/Los_Angeles",
+        website_url: resort?.website_url || "",
+        webcam_urls: resort?.webcam_urls || [],
+      });
+      setError(null);
+    }
+  }, [open, resort]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +87,21 @@ export function ResortFormDialog({
     if (isNaN(lat) || isNaN(lon)) {
       setError("Latitude and longitude are required");
       return;
+    }
+
+    // Validate webcam URLs
+    const validWebcams = formData.webcam_urls.filter((w) => w.url.trim());
+    for (const webcam of validWebcams) {
+      try {
+        const parsed = new URL(webcam.url);
+        if (parsed.protocol !== "https:") {
+          setError(`Webcam "${webcam.name || webcam.url}" must use HTTPS`);
+          return;
+        }
+      } catch {
+        setError(`Webcam "${webcam.name || webcam.url}" has an invalid URL`);
+        return;
+      }
     }
 
     const input: CreateResortInput = {
@@ -82,6 +116,7 @@ export function ResortFormDialog({
         : undefined,
       timezone: formData.timezone || undefined,
       website_url: formData.website_url || undefined,
+      webcam_urls: validWebcams.length > 0 ? validWebcams : undefined,
     };
 
     startTransition(async () => {
@@ -127,6 +162,7 @@ export function ResortFormDialog({
         elevation_summit: "",
         timezone: "America/Los_Angeles",
         website_url: "",
+        webcam_urls: [],
       });
     }
     onOpenChange(newOpen);
@@ -135,7 +171,7 @@ export function ResortFormDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {isEditing ? "Edit Resort" : "Add New Resort"}
@@ -244,6 +280,15 @@ export function ResortFormDialog({
                   setFormData({ ...formData, website_url: e.target.value })
                 }
                 placeholder="https://..."
+              />
+            </div>
+
+            <div className="border-t pt-4">
+              <WebcamConfigForm
+                webcams={formData.webcam_urls}
+                onChange={(webcams) =>
+                  setFormData({ ...formData, webcam_urls: webcams })
+                }
               />
             </div>
 
