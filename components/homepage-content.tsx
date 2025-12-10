@@ -102,7 +102,7 @@ export function HomepageContent({ isLoggedIn }: HomepageContentProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-              className="text-xl lg:text-2xl bg-blend-soft-light mt-4 text-black"
+              className="text-xl lg:text-2xl bg-blend-soft-light mt-4 text-black dark:text-foreground"
             >
               Your ski house, organized.
             </motion.p>
@@ -111,7 +111,7 @@ export function HomepageContent({ isLoggedIn }: HomepageContentProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-              className="text-base mt-2 max-w-md mx-auto text-black"
+              className="text-base mt-2 max-w-md mx-auto text-black dark:text-foreground"
             >
               Track who&apos;s staying, split expenses, and keep everyone in the
               loop.
