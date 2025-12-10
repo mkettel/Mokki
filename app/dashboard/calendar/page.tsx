@@ -31,7 +31,7 @@ export default async function CalendarPage() {
   return (
     <PageWrapper>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap gap-2 md:gap-0 items-center justify-between">
           <div>
             <h1 className="text-2xl text-red uppercase font-bold">Calendar</h1>
             <p className="text-muted-foreground">
