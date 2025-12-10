@@ -12,9 +12,10 @@ import {
   addMonths,
   subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type { EventWithParticipants } from "@/types/database";
 
 interface Stay {
   id: string;
@@ -31,6 +32,7 @@ interface Stay {
 
 interface StaysCalendarProps {
   stays: Stay[];
+  events?: EventWithParticipants[];
 }
 
 // Generate consistent colors for users based on their ID
@@ -51,7 +53,15 @@ function getUserColor(userId: string): string {
   return colors[hash % colors.length];
 }
 
-export function StaysCalendar({ stays }: StaysCalendarProps) {
+function formatTime(time: string): string {
+  const [hours, minutes] = time.split(":");
+  const h = parseInt(hours, 10);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hour12 = h % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+}
+
+export function StaysCalendar({ stays, events = [] }: StaysCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -84,6 +94,23 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
         isWithinInterval(date, { start: checkIn, end: checkOut }) ||
         isSameDay(date, checkIn) ||
         isSameDay(date, checkOut)
+      );
+    });
+  };
+
+  const getEventsForDay = (date: Date) => {
+    return events.filter((event) => {
+      const eventDate = new Date(event.event_date);
+      // For single-day events
+      if (!event.end_date) {
+        return isSameDay(date, eventDate);
+      }
+      // For multi-day events
+      const endDate = new Date(event.end_date);
+      return (
+        isWithinInterval(date, { start: eventDate, end: endDate }) ||
+        isSameDay(date, eventDate) ||
+        isSameDay(date, endDate)
       );
     });
   };
@@ -140,7 +167,10 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
         <div className="grid grid-cols-7">
           {allDays.map((date, i) => {
             const dayStays = getStaysForDay(date);
+            const dayEvents = getEventsForDay(date);
             const isCurrentMonth = isSameMonth(date, currentMonth);
+            const totalItems = dayStays.length + dayEvents.length;
+            const maxDisplay = 3;
 
             return (
               <div
@@ -162,7 +192,8 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
                   {format(date, "d")}
                 </div>
                 <div className="space-y-0.5">
-                  {dayStays.slice(0, 3).map((stay) => (
+                  {/* Render stays first */}
+                  {dayStays.slice(0, maxDisplay).map((stay) => (
                     <div
                       key={stay.id}
                       className={cn(
@@ -186,9 +217,22 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
                       )}
                     </div>
                   ))}
-                  {dayStays.length > 3 && (
+                  {/* Render events with remaining slots */}
+                  {dayEvents
+                    .slice(0, Math.max(0, maxDisplay - dayStays.length))
+                    .map((event) => (
+                      <div
+                        key={event.id}
+                        className="text-xs px-1 py-0.5 rounded truncate flex items-center gap-0.5 border border-amber-400 bg-amber-50 text-amber-800"
+                        title={`${event.name}${event.event_time ? ` at ${formatTime(event.event_time)}` : ""}${event.description ? `: ${event.description}` : ""}`}
+                      >
+                        <CalendarDays className="h-2.5 w-2.5 flex-shrink-0" />
+                        <span className="truncate">{event.name}</span>
+                      </div>
+                    ))}
+                  {totalItems > maxDisplay && (
                     <div className="text-xs text-muted-foreground px-1">
-                      +{dayStays.length - 3} more
+                      +{totalItems - maxDisplay} more
                     </div>
                   )}
                 </div>
@@ -199,7 +243,7 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
       </div>
 
       {/* Legend */}
-      {stays.length > 0 && (
+      {(stays.length > 0 || events.length > 0) && (
         <div className="flex flex-wrap gap-3">
           {Array.from(new Set(stays.map((s) => s.profiles?.id))).map(
             (userId) => {
@@ -216,6 +260,12 @@ export function StaysCalendar({ stays }: StaysCalendarProps) {
                 </div>
               );
             }
+          )}
+          {events.length > 0 && (
+            <div className="flex items-center gap-1.5 text-sm">
+              <div className="w-3 h-3 rounded border border-amber-400 bg-amber-50" />
+              <span>Events</span>
+            </div>
           )}
         </div>
       )}

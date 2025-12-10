@@ -531,6 +531,96 @@ export interface Database {
           }
         ];
       };
+      events: {
+        Row: {
+          id: string;
+          house_id: string;
+          created_by: string;
+          name: string;
+          description: string | null;
+          event_date: string;
+          event_time: string | null;
+          end_date: string | null;
+          end_time: string | null;
+          links: string[] | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          house_id: string;
+          created_by: string;
+          name: string;
+          description?: string | null;
+          event_date: string;
+          event_time?: string | null;
+          end_date?: string | null;
+          end_time?: string | null;
+          links?: string[] | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          event_date?: string;
+          event_time?: string | null;
+          end_date?: string | null;
+          end_time?: string | null;
+          links?: string[] | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "events_house_id_fkey";
+            columns: ["house_id"];
+            isOneToOne: false;
+            referencedRelation: "houses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "events_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      event_participants: {
+        Row: {
+          id: string;
+          event_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          event_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_participants_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "event_participants_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {};
     Functions: {};
@@ -707,4 +797,19 @@ export type ExpenseSummary = {
 export type ExpenseBalanceData = {
   balances: UserBalance[];
   summary: ExpenseSummary;
+};
+
+// Event types
+export type Event = Database["public"]["Tables"]["events"]["Row"];
+export type EventParticipant = Database["public"]["Tables"]["event_participants"]["Row"];
+
+export type EventWithCreator = Event & {
+  profiles: Profile;
+};
+
+export type EventWithParticipants = Event & {
+  profiles: Profile; // creator
+  event_participants: (EventParticipant & {
+    profiles: Profile;
+  })[];
 };
