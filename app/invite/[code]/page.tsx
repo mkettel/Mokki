@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 // App Store URL - update this when your app is live on the App Store
 const APP_STORE_URL = "https://apps.apple.com/app/mokki/id0000000000"; // TODO: Update with real App Store ID
-const TESTFLIGHT_URL = "https://testflight.apple.com/join/YOUR_CODE"; // TODO: Update with TestFlight link
+const TESTFLIGHT_URL = "https://testflight.apple.com/join/AJgvFdSj"; // TODO: Update with TestFlight link
 
 interface InvitePageProps {
   params: Promise<{ code: string }>;
@@ -19,7 +19,8 @@ async function getInviteDetails(code: string) {
   // Look up the invite code (using type assertion since house_invites may not be in generated types)
   const { data: invite, error } = await (supabase as any)
     .from("house_invites")
-    .select(`
+    .select(
+      `
       id,
       house_id,
       code,
@@ -28,7 +29,8 @@ async function getInviteDetails(code: string) {
         id,
         name
       )
-    `)
+    `
+    )
     .eq("code", code.toUpperCase())
     .single();
 
@@ -38,7 +40,11 @@ async function getInviteDetails(code: string) {
 
   // Check if expired
   if (new Date(invite.expires_at) < new Date()) {
-    return { valid: false, expired: true, houseName: invite.houses?.name || null };
+    return {
+      valid: false,
+      expired: true,
+      houseName: invite.houses?.name || null,
+    };
   }
 
   return {
@@ -55,7 +61,9 @@ export default async function InvitePage({ params }: InvitePageProps) {
 
   // Check if user is logged in
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // If user is logged in and invite is valid, try to join the house
   if (user && inviteDetails.valid && inviteDetails.houseId) {
@@ -115,7 +123,9 @@ export default async function InvitePage({ params }: InvitePageProps) {
                 </h1>
                 <p className="text-muted-foreground mb-6">
                   {inviteDetails.expired
-                    ? `This invite to ${inviteDetails.houseName || "the house"} has expired. Ask the house admin for a new invite link.`
+                    ? `This invite to ${
+                        inviteDetails.houseName || "the house"
+                      } has expired. Ask the house admin for a new invite link.`
                     : "This invite link is not valid. Please check the link and try again."}
                 </p>
                 <Link
@@ -135,13 +145,18 @@ export default async function InvitePage({ params }: InvitePageProps) {
                   Join {inviteDetails.houseName}
                 </h1>
                 <p className="text-muted-foreground mb-6">
-                  You&apos;ve been invited to join a ski house on Mökki! Download the app to accept this invite.
+                  You&apos;ve been invited to join a ski house on Mökki!
+                  Download the app to accept this invite.
                 </p>
 
                 {/* Invite Code Display */}
                 <div className="bg-muted rounded-lg p-4 mb-6">
-                  <p className="text-sm text-muted-foreground mb-1">Your invite code</p>
-                  <p className="text-2xl font-mono font-bold tracking-wider">{code.toUpperCase()}</p>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    Your invite code
+                  </p>
+                  <p className="text-2xl font-mono font-bold tracking-wider">
+                    {code.toUpperCase()}
+                  </p>
                 </div>
 
                 {/* Download Buttons */}
@@ -172,7 +187,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-6">
-                  After downloading, open the app and enter your invite code to join the house.
+                  After downloading, open the app and enter your invite code to
+                  join the house.
                 </p>
 
                 {/* Web login option for existing users */}
