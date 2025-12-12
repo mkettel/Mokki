@@ -16,8 +16,8 @@ interface InvitePageProps {
 async function getInviteDetails(code: string) {
   const supabase = await createClient();
 
-  // Look up the invite code
-  const { data: invite, error } = await supabase
+  // Look up the invite code (using type assertion since house_invites may not be in generated types)
+  const { data: invite, error } = await (supabase as any)
     .from("house_invites")
     .select(`
       id,
@@ -38,13 +38,13 @@ async function getInviteDetails(code: string) {
 
   // Check if expired
   if (new Date(invite.expires_at) < new Date()) {
-    return { valid: false, expired: true, houseName: (invite.houses as any)?.name || null };
+    return { valid: false, expired: true, houseName: invite.houses?.name || null };
   }
 
   return {
     valid: true,
     expired: false,
-    houseName: (invite.houses as any)?.name || "a ski house",
+    houseName: invite.houses?.name || "a ski house",
     houseId: invite.house_id,
   };
 }
