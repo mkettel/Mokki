@@ -1,0 +1,18 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "DC9SHWF559.app.mokki.mobile",
+        "paths": [
+          "/invite/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "DC9SHWF559.app.mokki.mobile"
+    ]
+  }
+}

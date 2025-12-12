@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
     // Also needed for middleware/proxy to handle large requests
     middlewareClientMaxBodySize: "500mb",
   },
+  // Headers for Apple App Site Association file
+  async headers() {
+    return [
+      {
+        source: "/.well-known/apple-app-site-association",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/json",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
