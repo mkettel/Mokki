@@ -53,6 +53,7 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/login") ||
     request.nextUrl.pathname.startsWith("/auth") ||
     request.nextUrl.pathname.startsWith("/invite") ||
+    request.nextUrl.pathname.startsWith("/privacy") ||
     request.nextUrl.pathname.startsWith("/.well-known");
 
   if (!user && !isPublicRoute) {
