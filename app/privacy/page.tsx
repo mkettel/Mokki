@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
                 Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the application.
               </p>
               <div className="mt-4 p-4 bg-secondary/50 rounded-lg">
-                <p className="text-sm"><strong>Contact:</strong> matt@mokkiski.com</p>
+                <p className="text-sm"><strong>Contact:</strong> mattkettelkamp@gmail.com</p>
                 <p className="text-sm"><strong>Website:</strong> mokkiski.com</p>
               </div>
             </section>
@@ -235,7 +235,7 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-xl font-semibold mb-3">Children&apos;s Privacy</h2>
               <p className="text-muted-foreground">
-                Mökki is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us at matt@mokkiski.com, and we will delete such information.
+                Mökki is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us at mattkettelkamp@gmail.com, and we will delete such information.
               </p>
             </section>
 
@@ -262,7 +262,7 @@ export default function PrivacyPolicy() {
                 If you have questions or concerns about this Privacy Policy or our data practices, please contact us:
               </p>
               <div className="p-4 bg-secondary/50 rounded-lg">
-                <p className="font-medium">Email: matt@mokkiski.com</p>
+                <p className="font-medium">Email: mattkettelkamp@gmail.com</p>
                 <p className="text-sm text-muted-foreground mt-1">
                   For data protection inquiries, include &quot;Privacy Request&quot; in your subject line.
                 </p>
